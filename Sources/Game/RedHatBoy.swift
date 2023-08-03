@@ -40,4 +40,8 @@ final class RedHatBoy {
   func runRight() {
     stateMachine = stateMachine.transition(event: .run)
   }
+
+  func slide() {
+    stateMachine = stateMachine.transition(event: .slide)
+  }
 }

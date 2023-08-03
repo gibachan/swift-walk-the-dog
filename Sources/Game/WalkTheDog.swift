@@ -42,17 +42,20 @@ extension WalkTheDog: Game {
   }
 
   public func update(keyState: KeyState) {
+    guard let rhb else { return }
+
     if keyState.isPressed(code: "ArrowDown") {
+      rhb.slide()
     }
     if keyState.isPressed(code: "ArrowUp") {
     }
     if keyState.isPressed(code: "ArrowRight") {
-      rhb!.runRight()
+      rhb.runRight()
     }
     if keyState.isPressed(code: "ArrowLeft") {
     }
 
-    rhb!.update()
+    rhb.update()
   }
 
   public func draw(renderer: Renderer) {

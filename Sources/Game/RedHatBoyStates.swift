@@ -10,6 +10,9 @@ private let runFrameName = "Run"
 private let runningFrames: UInt8 = 23
 private let runningSpeed: Int16 = 3
 
+private let slidingFrameName = "Slide"
+private let slidingFrames: UInt8 = 14
+
 public struct RedHatBoyState<S> {
   private let _context: RedHatBoyContext
   private let _state: S
@@ -70,8 +73,7 @@ extension RedHatBoyContext {
   }
 }
 
-public struct Idle {
-}
+public struct Idle {}
 
 public extension RedHatBoyState where S == Idle {
   init() {
@@ -102,12 +104,18 @@ public extension RedHatBoyState where S == Idle {
   }
 }
 
-public struct Running {
-}
+public struct Running {}
 
 public extension RedHatBoyState where S == Running {
   var frameName: String {
     runFrameName
+  }
+
+  func slide() -> RedHatBoyState<Sliding> {
+    RedHatBoyState<Sliding>(
+      _context: _context.resetFrame(),
+      _state: Sliding()
+    )
   }
 
   func update() -> Self {
@@ -116,4 +124,33 @@ public extension RedHatBoyState where S == Running {
       _state: _state
     )
   }
+}
+
+public struct Sliding {}
+
+public extension RedHatBoyState where S == Sliding {
+  var frameName: String {
+    slidingFrameName
+  }
+
+  func update() -> SlidingEndState {
+    let newContext = _context.update(frameCount: slidingFrames)
+    if newContext.frame >= slidingFrames {
+      return .complete(self.stand())
+    } else {
+      return .sliding(.init(
+        _context: newContext,
+        _state: _state
+      ))
+    }
+  }
+
+  func stand() -> RedHatBoyState<Running> {
+    return .init(_context: _context, _state: Running())
+  }
+}
+
+public enum SlidingEndState {
+  case complete(RedHatBoyState<Running>)
+  case sliding(RedHatBoyState<Sliding>)
 }
