@@ -1,7 +1,7 @@
 import JavaScriptKit
 import Engine
 
-final class RedHatBoy {
+public final class RedHatBoy {
   private var stateMachine: RedHatBoyStateMachine
   private let spriteSheet: Sheet
   private let image: JSValue //HtmlImageElement

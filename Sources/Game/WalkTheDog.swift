@@ -4,62 +4,62 @@ import Foundation
 import JavaScriptKit
 import JavaScriptEventLoop
 
-public final class WalkTheDog {
-  private let rhb: RedHatBoy?
+public enum WalkTheDog {
+  case loading
+  case loaded(RedHatBoy)
+}
 
-  private init(
-    rhb: RedHatBoy?
-  ) {
-    self.rhb = rhb
-  }
-
-  public convenience init() {
-    self.init(
-      rhb: nil
-    )
+public extension WalkTheDog {
+  static func new() -> Self {
+    .loading
   }
 }
 
 extension WalkTheDog: Game {
   public func initialize(callback: @escaping (any Game) -> Void) {
-    fetchJson(path: "rhb.json") { response in
-      Task {
-        let json = try await JSPromise(response.json().object!)!.value
-        let sheet = try JSValueDecoder().decode(Sheet.self, from: json)
-        loadImage(source: "rhb.png") { [weak self] image in
-          guard let self else { return }
-          callback(
-            WalkTheDog(
-              rhb: RedHatBoy(
-                spriteSheet: sheet,
-                image: image
+    switch self {
+    case .loading:
+      fetchJson(path: "rhb.json") { response in
+        Task {
+          let json = try await JSPromise(response.json().object!)!.value
+          let sheet = try JSValueDecoder().decode(Sheet.self, from: json)
+          loadImage(source: "rhb.png") { image in
+            callback(
+              WalkTheDog.loaded(RedHatBoy(
+                  spriteSheet: sheet,
+                  image: image
+                )
               )
             )
-          )
+          }
         }
       }
+    case .loaded:
+      fatalError("Error: Game is already initialized!")
     }
   }
 
   public func update(keyState: KeyState) {
-    guard let rhb else { return }
+    if case let .loaded(rhb) = self {
+      if keyState.isPressed(code: "ArrowDown") {
+        rhb.slide()
+      }
+      if keyState.isPressed(code: "ArrowUp") {
+      }
+      if keyState.isPressed(code: "ArrowRight") {
+        rhb.runRight()
+      }
+      if keyState.isPressed(code: "ArrowLeft") {
+      }
 
-    if keyState.isPressed(code: "ArrowDown") {
-      rhb.slide()
+      rhb.update()
     }
-    if keyState.isPressed(code: "ArrowUp") {
-    }
-    if keyState.isPressed(code: "ArrowRight") {
-      rhb.runRight()
-    }
-    if keyState.isPressed(code: "ArrowLeft") {
-    }
-
-    rhb.update()
   }
 
   public func draw(renderer: Renderer) {
     renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: 600))
-    rhb?.draw(renderer: renderer)
+    if case let .loaded(rhb) = self {
+      rhb.draw(renderer: renderer)
+    }
   }
 }
