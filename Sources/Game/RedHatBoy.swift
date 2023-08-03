@@ -36,4 +36,8 @@ final class RedHatBoy {
   func update() {
     stateMachine = stateMachine.update()
   }
+
+  func runRight() {
+    stateMachine = stateMachine.transition(event: .run)
+  }
 }

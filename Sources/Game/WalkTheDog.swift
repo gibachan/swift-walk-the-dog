@@ -5,32 +5,16 @@ import JavaScriptKit
 import JavaScriptEventLoop
 
 public final class WalkTheDog {
-  private let image: JSValue? // HtmlImageElement
-  private let sheet: Sheet?
-  private var frame: UInt8
-  private var position: Point
   private let rhb: RedHatBoy?
 
   private init(
-    image: JSValue?,
-    sheet: Sheet?,
-    frame: UInt8,
-    position: Point,
     rhb: RedHatBoy?
   ) {
-    self.image = image
-    self.sheet = sheet
-    self.frame = frame
-    self.position = position
     self.rhb = rhb
   }
 
   public convenience init() {
     self.init(
-      image: nil,
-      sheet: nil,
-      frame: 0,
-      position: .init(x: 0, y: 0),
       rhb: nil
     )
   }
@@ -46,10 +30,6 @@ extension WalkTheDog: Game {
           guard let self else { return }
           callback(
             WalkTheDog(
-              image: image,
-              sheet: sheet,
-              frame: frame,
-              position: position,
               rhb: RedHatBoy(
                 spriteSheet: sheet,
                 image: image
@@ -62,54 +42,21 @@ extension WalkTheDog: Game {
   }
 
   public func update(keyState: KeyState) {
-    var velocity = Point(x: 0, y: 0)
-
     if keyState.isPressed(code: "ArrowDown") {
-      velocity.y += 3
     }
     if keyState.isPressed(code: "ArrowUp") {
-      velocity.y -= 3
     }
     if keyState.isPressed(code: "ArrowRight") {
-      velocity.x += 3
+      rhb!.runRight()
     }
     if keyState.isPressed(code: "ArrowLeft") {
-      velocity.x -= 3
-    }
-
-    position.x += velocity.x
-    position.y += velocity.y
-
-    if frame < 23 {
-      frame += 1
-    } else {
-      frame = 0
     }
 
     rhb!.update()
   }
 
   public func draw(renderer: Renderer) {
-    let currentSprite = (frame / 3) + 1
-    let frameName = "Run (\(currentSprite)).png"
-    let sprite = sheet!.frames[frameName]!
     renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: 600))
-    renderer.draw(
-      image: image!,
-      frame: .init(
-        x: Float32(sprite.frame.x),
-        y: Float32(sprite.frame.y),
-        width: Float32(sprite.frame.w),
-        height: Float32(sprite.frame.h)
-      ),
-      destination: .init(
-        x: Float32(position.x),
-        y: Float32(position.y),
-        width: Float32(sprite.frame.w),
-        height: Float32(sprite.frame.h)
-      )
-    )
     rhb?.draw(renderer: renderer)
   }
 }
-

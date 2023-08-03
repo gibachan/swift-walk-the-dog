@@ -38,9 +38,9 @@ extension RedHatBoyStateMachine {
   func update() -> Self {
     switch self {
     case let .idle(state):
-      return .idle(state.nextFrame())
-    case .running:
-      return self
+      return .idle(state.update())
+    case let .running(state):
+      return .running(state.update())
     }
   }
 }
