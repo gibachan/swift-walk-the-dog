@@ -4,47 +4,25 @@ import Foundation
 import JavaScriptKit
 import JavaScriptEventLoop
 
-struct Size: Decodable {
-  let w: UInt16
-  let h: UInt16
-}
-
-struct Cell: Decodable {
-  let frame: SheetRect
-  let rotated: Bool
-  let trimmed: Bool
-  let spriteSourceSize: SheetRect
-  let sourceSize: Size
-
-}
-
-struct Sheet: Decodable {
-  let frames: [String: Cell]
-}
-
-struct SheetRect: Decodable {
-  let x: UInt16
-  let y: UInt16
-  let w: UInt16
-  let h: UInt16
-}
-
 public final class WalkTheDog {
   private let image: JSValue? // HtmlImageElement
   private let sheet: Sheet?
   private var frame: UInt8
   private var position: Point
+  private let rhb: RedHatBoy?
 
   private init(
     image: JSValue?,
     sheet: Sheet?,
     frame: UInt8,
-    position: Point
+    position: Point,
+    rhb: RedHatBoy?
   ) {
     self.image = image
     self.sheet = sheet
     self.frame = frame
     self.position = position
+    self.rhb = rhb
   }
 
   public convenience init() {
@@ -52,7 +30,8 @@ public final class WalkTheDog {
       image: nil,
       sheet: nil,
       frame: 0,
-      position: .init(x: 0, y: 0)
+      position: .init(x: 0, y: 0),
+      rhb: nil
     )
   }
 }
@@ -70,7 +49,11 @@ extension WalkTheDog: Game {
               image: image,
               sheet: sheet,
               frame: frame,
-              position: position
+              position: position,
+              rhb: RedHatBoy(
+                spriteSheet: sheet,
+                image: image
+              )
             )
           )
         }
@@ -102,6 +85,8 @@ extension WalkTheDog: Game {
     } else {
       frame = 0
     }
+
+    rhb!.update()
   }
 
   public func draw(renderer: Renderer) {
@@ -124,5 +109,7 @@ extension WalkTheDog: Game {
         height: Float32(sprite.frame.h)
       )
     )
+    rhb?.draw(renderer: renderer)
   }
 }
+
