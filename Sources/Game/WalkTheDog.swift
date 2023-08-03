@@ -51,6 +51,9 @@ extension WalkTheDog: Game {
       }
       if keyState.isPressed(code: "ArrowLeft") {
       }
+      if keyState.isPressed(code: "Space") {
+        rhb.jump()
+      }
 
       rhb.update()
     }

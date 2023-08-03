@@ -2,11 +2,13 @@ enum RedHatBoyStateMachine {
   case idle(RedHatBoyState<Idle>)
   case running(RedHatBoyState<Running>)
   case sliding(RedHatBoyState<Sliding>)
+  case jumping(RedHatBoyState<Jumping>)
 }
 
 public enum Event {
   case run
   case slide
+  case jump
   case update
 }
 
@@ -19,6 +21,8 @@ extension RedHatBoyStateMachine {
       return state.frameName
     case let .sliding(state):
       return state.frameName
+    case let .jumping(state):
+      return state.frameName
     }
   }
 
@@ -30,6 +34,8 @@ extension RedHatBoyStateMachine {
       return state.context
     case let .sliding(state):
       return state.context
+    case let .jumping(state):
+      return state.context
     }
   }
 
@@ -39,9 +45,13 @@ extension RedHatBoyStateMachine {
       return state.run().into()
     case let (.running(state), .slide):
       return state.slide().into()
+    case let (.running(state), .jump):
+      return state.jump().into()
     case let (.idle(state), .update):
       return state.update().into()
     case let (.running(state), .update):
+      return state.update().into()
+    case let (.jumping(state), .update):
       return state.update().into()
     case let (.sliding(state), .update):
       return state.update().into()
@@ -80,6 +90,23 @@ extension SlidingEndState {
       return .running(state)
     case let .sliding(state):
       return .sliding(state)
+    }
+  }
+}
+
+extension RedHatBoyState where S == Jumping {
+  func into() -> RedHatBoyStateMachine {
+    RedHatBoyStateMachine.jumping(self)
+  }
+}
+
+extension JumpingEndState {
+  func into() -> RedHatBoyStateMachine {
+    switch self {
+    case let .complete(state):
+      return .running(state)
+    case let .jumping(state):
+      return .jumping(state)
     }
   }
 }

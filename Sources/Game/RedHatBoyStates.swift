@@ -13,6 +13,12 @@ private let runningSpeed: Int16 = 3
 private let slidingFrameName = "Slide"
 private let slidingFrames: UInt8 = 14
 
+private let jumpingFrameName = "Jump"
+private let jumpingFrames: UInt8 = 35
+private let jumpSpeed: Int16 = -25
+
+private let gravity: Int16 = 1
+
 public struct RedHatBoyState<S> {
   private let _context: RedHatBoyContext
   private let _state: S
@@ -39,15 +45,23 @@ extension RedHatBoyContext {
       newFrame = 0
     }
 
-    let newPosition = Point(
-      x: position.x + velocity.x,
-      y: position.y + velocity.y
+    let newVelocity = Point(
+      x: velocity.x,
+      y: velocity.y + gravity
     )
+
+    var newPosition = Point(
+      x: position.x + newVelocity.x,
+      y: position.y + newVelocity.y
+    )
+    if newPosition.y > floor {
+      newPosition.y = floor
+    }
 
     return .init(
       frame: newFrame,
       position: newPosition,
-      velocity: velocity
+      velocity: newVelocity
     )
   }
 
@@ -66,7 +80,20 @@ extension RedHatBoyContext {
     )
 
     return .init(
-      frame: 0,
+      frame: frame,
+      position: position,
+      velocity: newVelocity
+    )
+  }
+
+  func setVerticalVelocity(y: Int16) -> Self {
+    let newVelocity = Point(
+      x: velocity.x,
+      y: y
+    )
+
+    return .init(
+      frame: frame,
       position: position,
       velocity: newVelocity
     )
@@ -124,6 +151,13 @@ public extension RedHatBoyState where S == Running {
       _state: _state
     )
   }
+
+  func jump() -> RedHatBoyState<Jumping> {
+    RedHatBoyState<Jumping>(
+      _context: _context.setVerticalVelocity(y: jumpSpeed).resetFrame(),
+      _state: Jumping()
+    )
+  }
 }
 
 public struct Sliding {}
@@ -146,7 +180,7 @@ public extension RedHatBoyState where S == Sliding {
   }
 
   func stand() -> RedHatBoyState<Running> {
-    return .init(_context: _context, _state: Running())
+    return .init(_context: _context.resetFrame(), _state: Running())
   }
 }
 
@@ -154,3 +188,33 @@ public enum SlidingEndState {
   case complete(RedHatBoyState<Running>)
   case sliding(RedHatBoyState<Sliding>)
 }
+
+public struct Jumping {}
+
+public extension RedHatBoyState where S == Jumping {
+  var frameName: String {
+    jumpingFrameName
+  }
+
+  func update() -> JumpingEndState {
+    let newContext = _context.update(frameCount: jumpingFrames)
+    if context.position.y >= floor {
+      return .complete(self.land())
+    } else {
+      return .jumping(.init(
+        _context: newContext,
+        _state: _state
+      ))
+    }
+  }
+
+  func land() -> RedHatBoyState<Running> {
+    return .init(_context: _context.resetFrame(), _state: Running())
+  }
+}
+
+public enum JumpingEndState {
+  case complete(RedHatBoyState<Running>)
+  case jumping(RedHatBoyState<Jumping>)
+}
+

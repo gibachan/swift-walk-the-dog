@@ -44,4 +44,8 @@ public final class RedHatBoy {
   func slide() {
     stateMachine = stateMachine.transition(event: .slide)
   }
+
+  func jump() {
+    stateMachine = stateMachine.transition(event: .jump)
+  }
 }
