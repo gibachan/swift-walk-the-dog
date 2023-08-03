@@ -1,5 +1,5 @@
 import XCTest
-@testable import swift_walk_the_dogLibrary
+@testable import SwiftWalkTheDogLibrary
 
 final class swift_walk_the_dogLibraryTests: XCTestCase {
     func testExample() throws {

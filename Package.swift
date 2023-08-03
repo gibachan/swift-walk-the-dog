@@ -2,24 +2,34 @@
 import PackageDescription
 let package = Package(
     name: "swift-walk-the-dog",
+    platforms: [.macOS(.v13)],
     products: [
-        .executable(name: "swift-walk-the-dog", targets: ["swift-walk-the-dog"])
+        .executable(name: "SwiftWalkTheDog", targets: ["SwiftWalkTheDog"])
     ],
     dependencies: [
-        .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.15.0")
+        .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.18.0")
     ],
     targets: [
         .executableTarget(
-            name: "swift-walk-the-dog",
+            name: "SwiftWalkTheDog",
             dependencies: [
-                "swift-walk-the-dogLibrary",
-                .product(name: "JavaScriptKit", package: "JavaScriptKit")
-            ]),
+                "SwiftWalkTheDogLibrary",
+                .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+                .product(name: "JavaScriptEventLoop", package: "JavaScriptKit")
+            ],
+            resources: [
+              .copy("Resources/Idle (1).png"),
+              .copy("Resources/rhb.png"),
+              .copy("Resources/rhb.json")
+            ]
+        ),
         .target(
-            name: "swift-walk-the-dogLibrary",
-            dependencies: []),
+            name: "SwiftWalkTheDogLibrary",
+            dependencies: [
+              .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+            ]),
         .testTarget(
-            name: "swift-walk-the-dogLibraryTests",
-            dependencies: ["swift-walk-the-dogLibrary"]),
+            name: "SwiftWalkTheDogLibraryTests",
+            dependencies: ["SwiftWalkTheDogLibrary"]),
     ]
 )
