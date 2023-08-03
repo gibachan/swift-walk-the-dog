@@ -6,10 +6,10 @@ struct Size: Decodable {
 }
 
 struct SheetRect: Decodable {
-  let x: Float32
-  let y: Float32
-  let w: Float32
-  let h: Float32
+  let x: UInt16
+  let y: UInt16
+  let w: UInt16
+  let h: UInt16
 }
 
 struct Cell: Decodable {

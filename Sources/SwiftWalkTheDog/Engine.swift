@@ -9,6 +9,11 @@ public func loadImage(source: String, callback: @escaping (JSValue) -> Void) {
   })
 }
 
+public struct Point {
+  public var x: Int16
+  public var y: Int16
+}
+
 public struct Rect {
   let x: Float32
   let y: Float32
@@ -53,7 +58,7 @@ public class Renderer {
 
 public protocol Game {
   func initialize(callback: @escaping (any Game) -> Void)
-  func update()
+  func update(keyState: KeyState)
   func draw(renderer: Renderer)
 }
 
@@ -66,6 +71,8 @@ public class GameLoop {
   private var renderer: Renderer!
 
   public func start(game: any Game) {
+    prepareInput()
+
     game.initialize { [weak self] game in
       guard let self else { return }
 
@@ -74,27 +81,94 @@ public class GameLoop {
       self.accumulatedDelta = 0
       self.renderer = Renderer(context: getContext())
 
+      var keyState = KeyState()
       requestAnimation { [weak self] perf in
         guard let self else { return }
-        loop(perf: perf)
+
+        loop(perf: perf, keyState: keyState)
       }
     }
   }
 
-  private func loop(perf: Float64) {
+  private func loop(perf: Float64, keyState: KeyState) {
     requestAnimation { [weak self] perf in
       guard let self else { return }
 
+      processInput(state: keyState)
+
       accumulatedDelta += perf - lastFrame
       while accumulatedDelta > Self.frameSize {
-        game.update()
+        game.update(keyState: keyState)
         accumulatedDelta -= Self.frameSize
       }
       lastFrame = perf
 
       game.draw(renderer: renderer)
 
-      loop(perf: perf)
+      loop(perf: perf, keyState: keyState)
+    }
+  }
+}
+
+public typealias KeyboardEventCode = String
+
+public struct KeyboardEvent {
+  let code: KeyboardEventCode
+}
+
+enum KeyPress {
+  case keyUp(KeyboardEvent)
+  case keyDown(KeyboardEvent)
+}
+
+private var keyEventReceiver: [KeyPress] = []
+
+public func prepareInput() {
+  var window = getWindow()
+  _ = window.onkeydown = .object(JSClosure { value in
+    let code: KeyboardEventCode = value.first?.object?.code.string ?? "??"
+    let event: KeyboardEvent = .init(code: code)
+    keyEventReceiver.append(.keyDown(event))
+    return .undefined
+  })
+  _ = window.onkeyup = .object(JSClosure { value in
+    let code: KeyboardEventCode = value.first?.object?.code.string ?? "??"
+    let event: KeyboardEvent = .init(code: code)
+    keyEventReceiver.append(.keyUp(event))
+    return .undefined
+  })
+}
+
+public final class KeyState {
+  var pressedKey: [KeyboardEventCode: KeyboardEvent] = [:]
+
+  func isPressed(code: KeyboardEventCode) -> Bool {
+    return pressedKey.keys.contains(code)
+  }
+
+  func setPressed(code: KeyboardEventCode, event: KeyboardEvent) {
+    pressedKey[code] = event
+  }
+
+  func setReleased(code: KeyboardEventCode) {
+    pressedKey[code] = nil
+  }
+}
+
+public func processInput(
+  state: KeyState
+) {
+  while true {
+    if let keyEvent = keyEventReceiver.first {
+      keyEventReceiver.removeFirst()
+      switch keyEvent {
+      case let .keyUp(event):
+        state.setReleased(code: event.code)
+      case let .keyDown(event):
+        state.setPressed(code: event.code, event: event)
+      }
+    } else {
+      break
     }
   }
 }

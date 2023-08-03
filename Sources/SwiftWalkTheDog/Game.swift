@@ -5,22 +5,26 @@ public final class WalkTheDog {
   private let image: JSValue? // HtmlImageElement
   private let sheet: Sheet?
   private var frame: UInt8
+  private var position: Point
 
   init(
     image: JSValue?,
     sheet: Sheet?,
-    frame: UInt8
+    frame: UInt8,
+    position: Point
   ) {
     self.image = image
     self.sheet = sheet
     self.frame = frame
+    self.position = position
   }
 
   convenience init() {
     self.init(
       image: nil,
       sheet: nil,
-      frame: 0
+      frame: 0,
+      position: .init(x: 0, y: 0)
     )
   }
 }
@@ -37,7 +41,8 @@ extension WalkTheDog: Game {
             WalkTheDog(
               image: image,
               sheet: sheet,
-              frame: frame
+              frame: frame,
+              position: position
             )
           )
         }
@@ -45,7 +50,25 @@ extension WalkTheDog: Game {
     }
   }
 
-  public func update() {
+  public func update(keyState: KeyState) {
+    var velocity = Point(x: 0, y: 0)
+
+    if keyState.isPressed(code: "ArrowDown") {
+      velocity.y += 3
+    }
+    if keyState.isPressed(code: "ArrowUp") {
+      velocity.y -= 3
+    }
+    if keyState.isPressed(code: "ArrowRight") {
+      velocity.x += 3
+    }
+    if keyState.isPressed(code: "ArrowLeft") {
+      velocity.x -= 3
+    }
+
+    position.x += velocity.x
+    position.y += velocity.y
+
     if frame < 23 {
       frame += 1
     } else {
@@ -60,8 +83,18 @@ extension WalkTheDog: Game {
     renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: 600))
     renderer.draw(
       image: image!,
-      frame: .init(x: sprite.frame.x, y: sprite.frame.y, width: sprite.frame.w, height: sprite.frame.h),
-      destination: .init(x: 300, y: 300, width: sprite.frame.w, height: sprite.frame.h)
+      frame: .init(
+        x: Float32(sprite.frame.x),
+        y: Float32(sprite.frame.y),
+        width: Float32(sprite.frame.w),
+        height: Float32(sprite.frame.h)
+      ),
+      destination: .init(
+        x: Float32(position.x),
+        y: Float32(position.y),
+        width: Float32(sprite.frame.w),
+        height: Float32(sprite.frame.h)
+      )
     )
   }
 }
