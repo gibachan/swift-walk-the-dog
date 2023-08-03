@@ -9,7 +9,6 @@ import JavaScriptKit
 //   depth: 5
 // )
 
-
 typealias Point = (Float64, Float64)
 typealias Points = (top: Point, left: Point, right: Point)
 typealias Color = (UInt8, UInt8, UInt8)

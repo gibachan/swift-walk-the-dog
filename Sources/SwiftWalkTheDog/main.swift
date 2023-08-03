@@ -1,3 +1,5 @@
+import Engine
+import Game
 import SwiftWalkTheDogLibrary
 import JavaScriptKit
 import JavaScriptEventLoop

@@ -26,10 +26,32 @@ let package = Package(
         .target(
             name: "SwiftWalkTheDogLibrary",
             dependencies: [
+              "Game",
+              "Engine",
+              .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+            ]),
+        .target(
+            name: "Game",
+            dependencies: [
+              "Engine",
+              .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+              .product(name: "JavaScriptEventLoop", package: "JavaScriptKit"),
+            ]),
+        .target(
+            name: "Engine",
+            dependencies: [
+              "Browser",
+              .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+            ]),
+        .target(
+            name: "Browser",
+            dependencies: [
               .product(name: "JavaScriptKit", package: "JavaScriptKit"),
             ]),
         .testTarget(
             name: "SwiftWalkTheDogLibraryTests",
-            dependencies: ["SwiftWalkTheDogLibrary"]),
+            dependencies: [
+              "SwiftWalkTheDogLibrary"
+            ]),
     ]
 )

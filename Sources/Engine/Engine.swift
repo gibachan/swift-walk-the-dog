@@ -1,3 +1,4 @@
+import Browser
 import JavaScriptKit
 
 public func loadImage(source: String, callback: @escaping (JSValue) -> Void) {
@@ -12,6 +13,11 @@ public func loadImage(source: String, callback: @escaping (JSValue) -> Void) {
 public struct Point {
   public var x: Int16
   public var y: Int16
+
+  public init(x: Int16, y: Int16) {
+    self.x = x
+    self.y = y
+  }
 }
 
 public struct Rect {
@@ -19,6 +25,18 @@ public struct Rect {
   let y: Float32
   let width: Float32
   let height: Float32
+
+  public init(
+    x: Float32,
+    y: Float32,
+    width: Float32,
+    height: Float32
+  ) {
+    self.x = x
+    self.y = y
+    self.width = width
+    self.height = height
+  }
 }
 
 public class Renderer {
@@ -70,6 +88,8 @@ public class GameLoop {
   private var accumulatedDelta: Float64 = 0
   private var renderer: Renderer!
 
+  public init() {}
+
   public func start(game: any Game) {
     prepareInput()
 
@@ -81,7 +101,7 @@ public class GameLoop {
       self.accumulatedDelta = 0
       self.renderer = Renderer(context: getContext())
 
-      var keyState = KeyState()
+      let keyState = KeyState()
       requestAnimation { [weak self] perf in
         guard let self else { return }
 
@@ -140,17 +160,17 @@ public func prepareInput() {
 }
 
 public final class KeyState {
-  var pressedKey: [KeyboardEventCode: KeyboardEvent] = [:]
+  private var pressedKey: [KeyboardEventCode: KeyboardEvent] = [:]
 
-  func isPressed(code: KeyboardEventCode) -> Bool {
+  public func isPressed(code: KeyboardEventCode) -> Bool {
     return pressedKey.keys.contains(code)
   }
 
-  func setPressed(code: KeyboardEventCode, event: KeyboardEvent) {
+  public func setPressed(code: KeyboardEventCode, event: KeyboardEvent) {
     pressedKey[code] = event
   }
 
-  func setReleased(code: KeyboardEventCode) {
+  public func setReleased(code: KeyboardEventCode) {
     pressedKey[code] = nil
   }
 }

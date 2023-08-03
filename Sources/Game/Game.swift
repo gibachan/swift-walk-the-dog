@@ -1,5 +1,33 @@
+import Browser
+import Engine
 import Foundation
 import JavaScriptKit
+import JavaScriptEventLoop
+
+struct Size: Decodable {
+  let w: UInt16
+  let h: UInt16
+}
+
+struct Cell: Decodable {
+  let frame: SheetRect
+  let rotated: Bool
+  let trimmed: Bool
+  let spriteSourceSize: SheetRect
+  let sourceSize: Size
+
+}
+
+struct Sheet: Decodable {
+  let frames: [String: Cell]
+}
+
+struct SheetRect: Decodable {
+  let x: UInt16
+  let y: UInt16
+  let w: UInt16
+  let h: UInt16
+}
 
 public final class WalkTheDog {
   private let image: JSValue? // HtmlImageElement
@@ -7,7 +35,7 @@ public final class WalkTheDog {
   private var frame: UInt8
   private var position: Point
 
-  init(
+  private init(
     image: JSValue?,
     sheet: Sheet?,
     frame: UInt8,
@@ -19,7 +47,7 @@ public final class WalkTheDog {
     self.position = position
   }
 
-  convenience init() {
+  public convenience init() {
     self.init(
       image: nil,
       sheet: nil,
