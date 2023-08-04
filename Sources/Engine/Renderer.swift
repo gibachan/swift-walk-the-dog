@@ -33,4 +33,15 @@ public class Renderer {
       destination.height
     )
   }
+
+  func drawEntireImage(
+    image: JSValue, // HtmlImageElement
+    position: Point
+  ) {
+    _ = context.drawImage(
+      image,
+      position.x,
+      position.y
+    )
+  }
 }

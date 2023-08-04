@@ -20,7 +20,8 @@ let package = Package(
             resources: [
               .copy("Resources/Idle (1).png"),
               .copy("Resources/rhb.png"),
-              .copy("Resources/rhb.json")
+              .copy("Resources/rhb.json"),
+              .copy("Resources/BG.png"),
             ]
         ),
         .target(
