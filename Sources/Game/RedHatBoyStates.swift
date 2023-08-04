@@ -1,7 +1,8 @@
 /// TODO: The file should be extracted as another package to encapsulate the inner implementation from the Game package. This technique can prevent unexpected creation of an illegal state.
 import Engine
 
-private let floor: Int16 = 475
+private let floor: Int16 = 479
+private let startingPoint: Int16 = -20
 
 private let idleFrameName = "Idle"
 private let idleFrames: UInt8 = 29
@@ -16,6 +17,9 @@ private let slidingFrames: UInt8 = 14
 private let jumpingFrameName = "Jump"
 private let jumpingFrames: UInt8 = 35
 private let jumpSpeed: Int16 = -25
+
+private let fallingFrameName = "Dead"
+private let fallingFrames: UInt8 = 29
 
 private let gravity: Int16 = 1
 
@@ -98,6 +102,19 @@ extension RedHatBoyContext {
       velocity: newVelocity
     )
   }
+
+  func stop() -> Self {
+    let newVelocity = Point(
+      x: 0,
+      y: velocity.y
+    )
+
+    return .init(
+      frame: frame,
+      position: position,
+      velocity: newVelocity
+    )
+  }
 }
 
 public struct Idle {}
@@ -106,7 +123,7 @@ public extension RedHatBoyState where S == Idle {
   init() {
     self._context = RedHatBoyContext(
       frame: 0,
-      position: .init(x: 0, y: floor),
+      position: .init(x: startingPoint, y: floor),
       velocity: .init(x: 0, y: 0)
     )
     self._state = Idle()
@@ -158,6 +175,13 @@ public extension RedHatBoyState where S == Running {
       _state: Jumping()
     )
   }
+
+  func knockOut() -> RedHatBoyState<Falling> {
+    RedHatBoyState<Falling>(
+      _context: _context.resetFrame().stop(),
+      _state: Falling()
+    )
+  }
 }
 
 public struct Sliding {}
@@ -181,6 +205,13 @@ public extension RedHatBoyState where S == Sliding {
 
   func stand() -> RedHatBoyState<Running> {
     return .init(_context: _context.resetFrame(), _state: Running())
+  }
+
+  func knockOut() -> RedHatBoyState<Falling> {
+    RedHatBoyState<Falling>(
+      _context: _context.resetFrame().stop(),
+      _state: Falling()
+    )
   }
 }
 
@@ -211,6 +242,13 @@ public extension RedHatBoyState where S == Jumping {
   func land() -> RedHatBoyState<Running> {
     return .init(_context: _context.resetFrame(), _state: Running())
   }
+
+  func knockOut() -> RedHatBoyState<Falling> {
+    RedHatBoyState<Falling>(
+      _context: _context.resetFrame().stop(),
+      _state: Falling()
+    )
+  }
 }
 
 public enum JumpingEndState {
@@ -218,3 +256,39 @@ public enum JumpingEndState {
   case jumping(RedHatBoyState<Jumping>)
 }
 
+public struct Falling {}
+
+public extension RedHatBoyState where S == Falling {
+  var frameName: String {
+    fallingFrameName
+  }
+
+  func update() -> FallingEndState {
+    let newContext = _context.update(frameCount: fallingFrames)
+    if newContext.frame >= fallingFrames {
+      return .knockedOut(self.knockOut())
+    } else {
+      return .falling(.init(_context: newContext, _state: _state))
+    }
+  }
+
+  func knockOut() -> RedHatBoyState<KnockedOut> {
+    RedHatBoyState<KnockedOut>(
+      _context: _context,
+      _state: KnockedOut()
+    )
+  }
+}
+
+public enum FallingEndState {
+  case knockedOut(RedHatBoyState<KnockedOut>)
+  case falling(RedHatBoyState<Falling>)
+}
+
+public struct KnockedOut {}
+
+public extension RedHatBoyState where S == KnockedOut {
+  var frameName: String {
+    fallingFrameName
+  }
+}

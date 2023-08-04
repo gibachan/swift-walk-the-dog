@@ -3,12 +3,15 @@ enum RedHatBoyStateMachine {
   case running(RedHatBoyState<Running>)
   case sliding(RedHatBoyState<Sliding>)
   case jumping(RedHatBoyState<Jumping>)
+  case falling(RedHatBoyState<Falling>)
+  case knockedOut(RedHatBoyState<KnockedOut>)
 }
 
 public enum Event {
   case run
   case slide
   case jump
+  case knockOut
   case update
 }
 
@@ -23,6 +26,10 @@ extension RedHatBoyStateMachine {
       return state.frameName
     case let .jumping(state):
       return state.frameName
+    case let .falling(state):
+      return state.frameName
+    case let .knockedOut(state):
+      return state.frameName
     }
   }
 
@@ -36,6 +43,10 @@ extension RedHatBoyStateMachine {
       return state.context
     case let .jumping(state):
       return state.context
+    case let .falling(state):
+      return state.context
+    case let .knockedOut(state):
+      return state.context
     }
   }
 
@@ -47,6 +58,7 @@ extension RedHatBoyStateMachine {
       return state.slide().into()
     case let (.running(state), .jump):
       return state.jump().into()
+
     case let (.idle(state), .update):
       return state.update().into()
     case let (.running(state), .update):
@@ -55,6 +67,15 @@ extension RedHatBoyStateMachine {
       return state.update().into()
     case let (.sliding(state), .update):
       return state.update().into()
+    case let (.falling(state), .update):
+      return state.update().into()
+
+    case let (.running(state), .knockOut):
+      return state.knockOut().into()
+    case let (.jumping(state), .knockOut):
+      return state.knockOut().into()
+    case let (.sliding(state), .knockOut):
+      return state.knockOut().into()
     default:
       return self
     }
@@ -108,5 +129,28 @@ extension JumpingEndState {
     case let .jumping(state):
       return .jumping(state)
     }
+  }
+}
+
+extension RedHatBoyState where S == Falling {
+  func into() -> RedHatBoyStateMachine {
+    RedHatBoyStateMachine.falling(self)
+  }
+}
+
+extension FallingEndState {
+  func into() -> RedHatBoyStateMachine {
+    switch self {
+    case let .knockedOut(state):
+      return state.into()
+    case let .falling(state):
+      return state.into()
+    }
+  }
+}
+
+extension RedHatBoyState where S == KnockedOut {
+  func into() -> RedHatBoyStateMachine {
+    RedHatBoyStateMachine.knockedOut(self)
   }
 }

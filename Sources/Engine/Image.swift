@@ -15,6 +15,7 @@ public func loadImage(source: String) async -> JSValue {
 public struct Image {
   let element: JSValue // HtmlImageElement
   let position: Point
+  public let boundingBox: Rect
 
   public init(
     element: JSValue,
@@ -22,6 +23,12 @@ public struct Image {
   ) {
     self.element = element
     self.position = position
+    self.boundingBox = Rect(
+      x: Float32(position.x),
+      y: Float32(position.y),
+      width: Float32(element.width.number!),
+      height: Float32(element.height.number!)
+    )
   }
 }
 

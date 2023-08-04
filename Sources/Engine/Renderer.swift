@@ -44,4 +44,17 @@ public class Renderer {
       position.y
     )
   }
+
+  public func drawRect(boundingBox: Rect) {
+    var _context = context
+    _context.strokeStyle = .string("#FF0000")
+    _ = context.beginPath()
+    _ = context.rect(
+      boundingBox.x,
+      boundingBox.y,
+      boundingBox.width,
+      boundingBox.height
+    )
+    _ = context.stroke()
+  }
 }

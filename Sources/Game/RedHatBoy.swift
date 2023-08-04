@@ -12,9 +12,27 @@ public final class RedHatBoy {
     self.image = image
   }
 
+  var frameName: String {
+    "\(stateMachine.frameName) (\(stateMachine.context.frame / 3 + 1)).png"
+  }
+
+  var currentSprite: Cell? {
+    spriteSheet.frames[frameName]
+  }
+
+  var boundingBox: Rect {
+    guard let sprite = currentSprite else { fatalError("Cell not found") }
+    
+    return .init(
+      x: Float32(stateMachine.context.position.x + Int16(sprite.spriteSourceSize.x)),
+      y: Float32(stateMachine.context.position.y + Int16(sprite.spriteSourceSize.y)),
+      width: Float32(sprite.frame.w),
+      height: Float32(sprite.frame.h)
+    )
+  }
+
   func draw(renderer: Renderer) {
-    let frameName = "\(stateMachine.frameName) (\(stateMachine.context.frame / 3 + 1)).png"
-    let sprite = spriteSheet.frames[frameName]!
+    guard let sprite = currentSprite else { fatalError("Cell not found") }
 
     renderer.draw(
       image: image,
@@ -25,12 +43,15 @@ public final class RedHatBoy {
         height: Float32(sprite.frame.h)
       ),
       destination: .init(
-        x: Float32(stateMachine.context.position.x),
-        y: Float32(stateMachine.context.position.y),
+        x: Float32(stateMachine.context.position.x + Int16(sprite.spriteSourceSize.x)),
+        y: Float32(stateMachine.context.position.y + Int16(sprite.spriteSourceSize.y)),
         width: Float32(sprite.frame.w),
         height: Float32(sprite.frame.h)
       )
     )
+
+    // BoundingBox
+    renderer.drawRect(boundingBox: boundingBox)
   }
 
   func update() {
@@ -47,5 +68,9 @@ public final class RedHatBoy {
 
   func jump() {
     stateMachine = stateMachine.transition(event: .jump)
+  }
+
+  func knockOut() {
+    stateMachine = stateMachine.transition(event: .knockOut)
   }
 }

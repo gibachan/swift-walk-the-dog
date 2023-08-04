@@ -26,3 +26,10 @@ public struct Rect {
     self.height = height
   }
 }
+
+public extension Rect {
+  func intersects(rect: Rect) -> Bool {
+    x < (rect.x + rect.width) && (x + width) > rect.x
+    && y < (rect.y + rect.height) && (y + height) > rect.y
+  }
+}

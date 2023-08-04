@@ -72,6 +72,10 @@ extension WalkTheDog: Game {
       }
 
       walk.boy.update()
+
+      if walk.boy.boundingBox.intersects(rect: walk.stone.boundingBox) {
+        walk.boy.knockOut()
+      }
     }
   }
 
