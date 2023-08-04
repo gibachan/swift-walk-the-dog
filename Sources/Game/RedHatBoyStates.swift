@@ -1,16 +1,11 @@
 /// TODO: The file should be extracted as another package to encapsulate the inner implementation from the Game package. This technique can prevent unexpected creation of an illegal state.
 import Engine
 
-private let floor: Int16 = 479
-private let playerHeight = height - floor
-private let startingPoint: Int16 = -20
-
 private let idleFrameName = "Idle"
 private let idleFrames: UInt8 = 29
 
 private let runFrameName = "Run"
 private let runningFrames: UInt8 = 23
-private let runningSpeed: Int16 = 4
 
 private let slidingFrameName = "Slide"
 private let slidingFrames: UInt8 = 14
@@ -22,9 +17,6 @@ private let jumpSpeed: Int16 = -25
 private let fallingFrameName = "Dead"
 private let fallingFrames: UInt8 = 29
 
-private let gravity: Int16 = 1
-private let terminalVelocity: Int16 = 20
-
 public struct RedHatBoyState<S> {
   private let _context: RedHatBoyContext
   private let _state: S
@@ -33,98 +25,6 @@ public struct RedHatBoyState<S> {
 extension RedHatBoyState {
   var context: RedHatBoyContext {
     _context
-  }
-}
-
-public struct RedHatBoyContext {
-  let frame: UInt8
-  let position: Point
-  let velocity: Point
-}
-
-extension RedHatBoyContext {
-  func update(frameCount: UInt8) -> Self {
-    var newVelocity = velocity
-    if velocity.y < terminalVelocity {
-      newVelocity.y += gravity
-    }
-
-    var newFrame = frame
-    if frame < frameCount {
-      newFrame += 1
-    } else {
-      newFrame = 0
-    }
-
-    var newPosition = Point(
-      x: position.x + newVelocity.x,
-      y: position.y + newVelocity.y
-    )
-    if newPosition.y > floor {
-      newPosition.y = floor
-    }
-
-    return .init(
-      frame: newFrame,
-      position: newPosition,
-      velocity: newVelocity
-    )
-  }
-
-  func resetFrame() -> Self {
-    .init(
-      frame: 0,
-      position: position,
-      velocity: velocity
-    )
-  }
-
-  func runRight() -> Self {
-    let newVelocity = Point(
-      x: velocity.x + runningSpeed,
-      y: velocity.y
-    )
-
-    return .init(
-      frame: frame,
-      position: position,
-      velocity: newVelocity
-    )
-  }
-
-  func setVerticalVelocity(y: Int16) -> Self {
-    let newVelocity = Point(
-      x: velocity.x,
-      y: y
-    )
-
-    return .init(
-      frame: frame,
-      position: position,
-      velocity: newVelocity
-    )
-  }
-
-  func stop() -> Self {
-    let newVelocity = Point(
-      x: 0,
-      y: 0
-    )
-
-    return .init(
-      frame: frame,
-      position: position,
-      velocity: newVelocity
-    )
-  }
-
-  func setOn(position: Int16) -> Self {
-    let newPositionY = position - playerHeight
-    return .init(
-      frame: frame,
-      position: .init(x: self.position.x, y: newPositionY),
-      velocity: velocity
-    )
   }
 }
 
