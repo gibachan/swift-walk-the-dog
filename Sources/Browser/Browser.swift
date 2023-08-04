@@ -21,12 +21,14 @@ public func getContext() -> JSValue {
   getCanvas().getContext("2d")
 }
 
-public func fetchJson(path: String, callback: @escaping (JSValue) -> Void) {
-  fetch(path)
-    .then { response in
-      callback(response)
-      return JSValue.undefined
-    }
+public func fetchJson(path: String) async -> JSValue {
+  await withCheckedContinuation { continuation in
+    fetch(path)
+      .then { response in
+        continuation.resume(returning: response)
+        return JSValue.undefined
+      }
+  }
 }
 
 public func newImage() -> JSValue {

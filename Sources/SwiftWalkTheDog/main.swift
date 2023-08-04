@@ -6,6 +6,9 @@ import JavaScriptEventLoop
 
 JavaScriptEventLoop.installGlobalExecutor()
 
-let game = WalkTheDog.new()
-let gameLoop = GameLoop()
-gameLoop.start(game: game)
+Task {
+  let game = WalkTheDog.new()
+  let gameLoop = GameLoop()
+  await gameLoop.start(game: game)
+  print("OK")
+}

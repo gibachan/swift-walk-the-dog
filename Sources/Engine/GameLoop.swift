@@ -2,7 +2,7 @@ import Browser
 import JavaScriptKit
 
 public protocol Game {
-  func initialize(callback: @escaping (any Game) -> Void)
+  func initialize() async -> Game
   func update(keyState: KeyState)
   func draw(renderer: Renderer)
 }
@@ -17,30 +17,23 @@ public class GameLoop {
 
   public init() {}
 
-  public func start(game: any Game) {
+  public func start(game: any Game) async {
     prepareInput()
 
-    game.initialize { [weak self] game in
-      guard let self else { return }
+    self.game = await game.initialize()
+    self.lastFrame = getNow()
+    self.accumulatedDelta = 0
+    self.renderer = Renderer(context: getContext())
 
-      self.game = game
-      self.lastFrame = getNow()
-      self.accumulatedDelta = 0
-      self.renderer = Renderer(context: getContext())
-
-      let keyState = KeyState()
-      requestAnimation { [weak self] perf in
-        guard let self else { return }
-
-        loop(perf: perf, keyState: keyState)
-      }
+    let keyState = KeyState()
+    // Capture self to keep it available on requestAnimation
+    requestAnimation { [self] perf in
+      loop(perf: perf, keyState: keyState)
     }
   }
 
   private func loop(perf: Float64, keyState: KeyState) {
-    requestAnimation { [weak self] perf in
-      guard let self else { return }
-
+    requestAnimation { [self] perf in
       processInput(state: keyState)
 
       accumulatedDelta += perf - lastFrame
