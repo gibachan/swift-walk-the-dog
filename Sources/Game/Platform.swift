@@ -4,7 +4,7 @@ import JavaScriptKit
 struct Platform {
   let sheet: Sheet
   let image: JSValue // HtmlImageElement
-  let position: Point
+  var position: Point
 
   init(sheet: Sheet, image: JSValue, position: Point) {
     self.sheet = sheet
@@ -72,6 +72,13 @@ extension Platform {
         width: Float32((platform.frame.w * 3)),
         height: Float32(platform.frame.h)
       )
+    )
+  }
+
+  mutating func moveHorizontaly(_ distance: Int16) {
+    position = .init(
+      x: position.x + distance,
+      y: position.y
     )
   }
 }

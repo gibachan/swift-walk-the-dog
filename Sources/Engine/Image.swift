@@ -14,8 +14,8 @@ public func loadImage(source: String) async -> JSValue {
 
 public struct Image {
   let element: JSValue // HtmlImageElement
-  let position: Point
-  public let boundingBox: Rect
+  private(set) var position: Point
+  private(set) public var boundingBox: Rect
 
   public init(
     element: JSValue,
@@ -33,7 +33,37 @@ public struct Image {
 }
 
 public extension Image {
+  var right: Int16 {
+    Int16(boundingBox.x + boundingBox.width)
+  }
+
   func draw(renderer: Renderer) {
     renderer.drawEntireImage(image: element, position: position)
+  }
+
+  mutating func moveHorizontaly(_ distance: Int16) {
+    boundingBox = .init(
+      x: boundingBox.x + Float32(distance),
+      y: boundingBox.y,
+      width: boundingBox.width,
+      height: boundingBox.height
+    )
+    position = .init(
+      x: position.x + distance,
+      y: position.y
+    )
+  }
+
+  mutating func setX(_ x: Int16) {
+    boundingBox = .init(
+      x: Float32(x),
+      y: boundingBox.y,
+      width: boundingBox.width,
+      height: boundingBox.height
+    )
+    position = .init(
+      x: x,
+      y: position.y
+    )
   }
 }

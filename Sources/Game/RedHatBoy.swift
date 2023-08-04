@@ -53,6 +53,10 @@ public final class RedHatBoy {
     stateMachine.context.velocity.y
   }
 
+  var walkingSpeed: Int16 {
+    stateMachine.context.velocity.x
+  }
+
   func draw(renderer: Renderer) {
     guard let sprite = currentSprite else { fatalError("Cell not found") }
 

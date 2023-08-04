@@ -21,7 +21,7 @@ extension RedHatBoyContext {
     }
 
     var newPosition = Point(
-      x: position.x + newVelocity.x,
+      x: position.x,
       y: position.y + newVelocity.y
     )
     if newPosition.y > floor {

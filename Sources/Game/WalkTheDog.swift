@@ -1,19 +1,11 @@
 import Browser
 import Engine
-import Foundation
 import JavaScriptKit
 import JavaScriptEventLoop
 
 let height: Int16 = 600
 let lowPlatform: Int16 = 420
 let highPlatform: Int16 = 375
-
-public struct Walk {
-  let boy: RedHatBoy
-  let background: Image
-  let stone: Image
-  let platform: Platform
-}
 
 public enum WalkTheDog {
   case loading
@@ -46,16 +38,23 @@ extension WalkTheDog: Game {
           image: platformImage,
           position: .init(x: 370, y: lowPlatform)
         )
+        let backgroundWidth: Int16 = Int16(background.width.number!)
 
         return WalkTheDog.loaded(Walk(
           boy: RedHatBoy(
             spriteSheet: sheet,
             image: image
           ),
-          background: Image(
-            element: background,
-            position: .init(x: 0, y: 0)
-          ),
+          backgrounds: [
+            Image(
+              element: background,
+              position: .init(x: 0, y: 0)
+            ),
+            Image(
+              element: background,
+              position: .init(x: backgroundWidth, y: 0)
+            )
+          ],
           stone: Image(
             element: stone,
             position: .init(x: 150, y: 546)
@@ -88,6 +87,22 @@ extension WalkTheDog: Game {
 
       walk.boy.update()
 
+      walk.platform.moveHorizontaly(walk.velocity)
+      walk.stone.moveHorizontaly(walk.velocity)
+
+      var firstBackground = walk.backgrounds[0]
+      var secondBackground = walk.backgrounds[1]
+      firstBackground.moveHorizontaly(walk.velocity)
+      secondBackground.moveHorizontaly(walk.velocity)
+      if firstBackground.right < 0 {
+        firstBackground.setX(secondBackground.right)
+      }
+      if secondBackground.right < 0 {
+        secondBackground.setX(firstBackground.right)
+      }
+      walk.backgrounds = [firstBackground, secondBackground]
+
+
       // collision with a platform
       walk.platform.boundingBoxes.forEach { boundingBox in
         if walk.boy.boundingBox.intersects(rect: boundingBox) {
@@ -110,7 +125,9 @@ extension WalkTheDog: Game {
   public func draw(renderer: Renderer) {
     renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: Float32(height)))
     if case let .loaded(walk) = self {
-      walk.background.draw(renderer: renderer)
+      walk.backgrounds.forEach { background in
+        background.draw(renderer: renderer)
+      }
       walk.boy.draw(renderer: renderer)
       walk.stone.draw(renderer: renderer)
       walk.platform.draw(renderer: renderer)
