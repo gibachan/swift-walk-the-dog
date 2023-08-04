@@ -123,7 +123,7 @@ extension WalkTheDog: Game {
   }
 
   public func draw(renderer: Renderer) {
-    renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: Float32(height)))
+    renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: height))
     if case let .loaded(walk) = self {
       walk.backgrounds.forEach { background in
         background.draw(renderer: renderer)

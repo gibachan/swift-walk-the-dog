@@ -13,7 +13,7 @@ public enum Event {
   case jump
   case knockOut
   case update
-  case land(Float32)
+  case land(Int16)
 }
 
 extension RedHatBoyStateMachine {

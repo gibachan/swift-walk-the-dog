@@ -18,16 +18,16 @@ extension Platform {
     guard let platform = sheet.frames["13.png"] else { fatalError() }
 
     return .init(
-      x: Float32(position.x),
-      y: Float32(position.y),
-      width: Float32((platform.frame.w * 3)),
-      height: Float32(platform.frame.h)
+      x: position.x,
+      y: position.y,
+      width: platform.frame.w * 3,
+      height: platform.frame.h
     )
   }
 
   var boundingBoxes: [Rect] {
-    let xOffset: Float32 = 60
-    let endHeight: Float32 = 54
+    let xOffset: Int16 = 60
+    let endHeight: Int16 = 54
 
     let box = destinationBox
 
@@ -39,7 +39,7 @@ extension Platform {
     )
 
     let boundingBoxTwo = Rect(
-      x: box.x + xOffset,
+      x: box.x + Int16(xOffset),
       y: box.y,
       width: box.width - (xOffset * 2),
       height: box.height
@@ -61,16 +61,16 @@ extension Platform {
     renderer.draw(
       image: image,
       frame: .init(
-        x: Float32(platform.frame.x),
-        y: Float32(platform.frame.y),
-        width: Float32((platform.frame.w * 3)),
-        height: Float32((platform.frame.h))
+        x: platform.frame.x,
+        y: platform.frame.y,
+        width: platform.frame.w * 3,
+        height: platform.frame.h
       ),
       destination: .init(
-        x: Float32(position.x),
-        y: Float32(position.y),
-        width: Float32((platform.frame.w * 3)),
-        height: Float32(platform.frame.h)
+        x: position.x,
+        y: position.y,
+        width: platform.frame.w * 3,
+        height: platform.frame.h
       )
     )
   }

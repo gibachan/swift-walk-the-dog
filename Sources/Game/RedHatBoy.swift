@@ -24,17 +24,17 @@ public final class RedHatBoy {
     guard let sprite = currentSprite else { fatalError("Cell not found") }
     
     return .init(
-      x: Float32(stateMachine.context.position.x + Int16(sprite.spriteSourceSize.x)),
-      y: Float32(stateMachine.context.position.y + Int16(sprite.spriteSourceSize.y)),
-      width: Float32(sprite.frame.w),
-      height: Float32(sprite.frame.h)
+      x: stateMachine.context.position.x + sprite.spriteSourceSize.x,
+      y: stateMachine.context.position.y + sprite.spriteSourceSize.y,
+      width: sprite.frame.w,
+      height: sprite.frame.h
     )
   }
 
   var boundingBox: Rect {
-    let xOffset: Float32 = 18
-    let yOffset: Float32 = 14
-    let widthOffset: Float32 = 28
+    let xOffset: Int16 = 18
+    let yOffset: Int16 = 14
+    let widthOffset: Int16 = 28
     let box = destinationBox
 
     return .init(
@@ -63,16 +63,16 @@ public final class RedHatBoy {
     renderer.draw(
       image: image,
       frame: .init(
-        x: Float32(sprite.frame.x),
-        y: Float32(sprite.frame.y),
-        width: Float32(sprite.frame.w),
-        height: Float32(sprite.frame.h)
+        x: sprite.frame.x,
+        y: sprite.frame.y,
+        width: sprite.frame.w,
+        height: sprite.frame.h
       ),
       destination: .init(
-        x: Float32(stateMachine.context.position.x + Int16(sprite.spriteSourceSize.x)),
-        y: Float32(stateMachine.context.position.y + Int16(sprite.spriteSourceSize.y)),
-        width: Float32(sprite.frame.w),
-        height: Float32(sprite.frame.h)
+        x: stateMachine.context.position.x + sprite.spriteSourceSize.x,
+        y: stateMachine.context.position.y + sprite.spriteSourceSize.y,
+        width: sprite.frame.w,
+        height: sprite.frame.h
       )
     )
 
@@ -100,7 +100,7 @@ public final class RedHatBoy {
     stateMachine = stateMachine.transition(event: .knockOut)
   }
 
-  func landOn(position: Float32) {
+  func landOn(position: Int16) {
     stateMachine = stateMachine.transition(event: .land(position))
   }
 }

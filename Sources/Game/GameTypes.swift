@@ -17,8 +17,8 @@ struct Sheet: Decodable {
 }
 
 struct SheetRect: Decodable {
-  let x: UInt16
-  let y: UInt16
-  let w: UInt16
-  let h: UInt16
+  let x: Int16
+  let y: Int16
+  let w: Int16
+  let h: Int16
 }

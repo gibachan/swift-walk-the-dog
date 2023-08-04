@@ -94,9 +94,9 @@ public extension RedHatBoyState where S == Running {
     )
   }
 
-  func landOn(position: Float32) -> RedHatBoyState<Running> {
+  func landOn(position: Int16) -> RedHatBoyState<Running> {
     RedHatBoyState<Running>(
-      _context: _context.setOn(position: Int16(position)),
+      _context: _context.setOn(position: position),
       _state: Running()
     )
   }
@@ -132,9 +132,9 @@ public extension RedHatBoyState where S == Sliding {
     )
   }
 
-  func landOn(position: Float32) -> RedHatBoyState<Sliding> {
+  func landOn(position: Int16) -> RedHatBoyState<Sliding> {
     RedHatBoyState<Sliding>(
-      _context: _context.setOn(position: Int16(position)),
+      _context: _context.setOn(position: position),
       _state: Sliding()
     )
   }
@@ -155,7 +155,7 @@ public extension RedHatBoyState where S == Jumping {
   func update() -> JumpingEndState {
     let newContext = _context.update(frameCount: jumpingFrames)
     if context.position.y >= floor {
-      return .landing(self.landOn(position: Float32(height)))
+      return .landing(self.landOn(position: height))
     } else {
       return .jumping(.init(
         _context: newContext,
@@ -164,9 +164,9 @@ public extension RedHatBoyState where S == Jumping {
     }
   }
 
-  func landOn(position: Float32) -> RedHatBoyState<Running> {
+  func landOn(position: Int16) -> RedHatBoyState<Running> {
     return .init(
-      _context: _context.resetFrame().setOn(position: Int16(position)),
+      _context: _context.resetFrame().setOn(position: position),
       _state: Running()
     )
   }

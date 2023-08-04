@@ -9,16 +9,16 @@ public struct Point {
 }
 
 public struct Rect {
-  public let x: Float32
-  public let y: Float32
-  public let width: Float32
-  public let height: Float32
+  public let x: Int16
+  public let y: Int16
+  public let width: Int16
+  public let height: Int16
 
   public init(
-    x: Float32,
-    y: Float32,
-    width: Float32,
-    height: Float32
+    x: Int16,
+    y: Int16,
+    width: Int16,
+    height: Int16
   ) {
     self.x = x
     self.y = y

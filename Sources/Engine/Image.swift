@@ -24,17 +24,17 @@ public struct Image {
     self.element = element
     self.position = position
     self.boundingBox = Rect(
-      x: Float32(position.x),
-      y: Float32(position.y),
-      width: Float32(element.width.number!),
-      height: Float32(element.height.number!)
+      x: position.x,
+      y: position.y,
+      width: Int16(element.width.number!),
+      height: Int16(element.height.number!)
     )
   }
 }
 
 public extension Image {
   var right: Int16 {
-    Int16(boundingBox.x + boundingBox.width)
+    boundingBox.x + boundingBox.width
   }
 
   func draw(renderer: Renderer) {
@@ -43,7 +43,7 @@ public extension Image {
 
   mutating func moveHorizontaly(_ distance: Int16) {
     boundingBox = .init(
-      x: boundingBox.x + Float32(distance),
+      x: boundingBox.x + distance,
       y: boundingBox.y,
       width: boundingBox.width,
       height: boundingBox.height
@@ -56,7 +56,7 @@ public extension Image {
 
   mutating func setX(_ x: Int16) {
     boundingBox = .init(
-      x: Float32(x),
+      x: x,
       y: boundingBox.y,
       width: boundingBox.width,
       height: boundingBox.height
