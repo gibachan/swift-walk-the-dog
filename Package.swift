@@ -22,6 +22,7 @@ let package = Package(
               .copy("Resources/rhb.png"),
               .copy("Resources/rhb.json"),
               .copy("Resources/BG.png"),
+              .copy("Resources/Stone.png"),
             ]
         ),
         .target(

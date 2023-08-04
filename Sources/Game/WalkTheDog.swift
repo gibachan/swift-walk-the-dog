@@ -7,6 +7,7 @@ import JavaScriptEventLoop
 public struct Walk {
   let boy: RedHatBoy
   let background: Image
+  let stone: Image
 }
 
 public enum WalkTheDog {
@@ -29,6 +30,7 @@ extension WalkTheDog: Game {
         let json = try await JSPromise(response.json().object!)!.value
         let sheet = try JSValueDecoder().decode(Sheet.self, from: json)
         let background = await loadImage(source: "BG.png")
+        let stone = await loadImage(source: "Stone.png")
         let image = await loadImage(source: "rhb.png")
 
         return WalkTheDog.loaded(Walk(
@@ -39,6 +41,10 @@ extension WalkTheDog: Game {
           background: Image(
             element: background,
             position: .init(x: 0, y: 0)
+          ),
+          stone: Image(
+            element: stone,
+            position: .init(x: 150, y: 546)
           )
         ))
       } catch {
@@ -74,6 +80,7 @@ extension WalkTheDog: Game {
     if case let .loaded(walk) = self {
       walk.background.draw(renderer: renderer)
       walk.boy.draw(renderer: renderer)
+      walk.stone.draw(renderer: renderer)
     }
   }
 }
