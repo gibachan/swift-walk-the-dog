@@ -2,6 +2,7 @@
 import Engine
 
 private let floor: Int16 = 479
+private let playerHeight = height - floor
 private let startingPoint: Int16 = -20
 
 private let idleFrameName = "Idle"
@@ -9,7 +10,7 @@ private let idleFrames: UInt8 = 29
 
 private let runFrameName = "Run"
 private let runningFrames: UInt8 = 23
-private let runningSpeed: Int16 = 3
+private let runningSpeed: Int16 = 4
 
 private let slidingFrameName = "Slide"
 private let slidingFrames: UInt8 = 14
@@ -22,6 +23,7 @@ private let fallingFrameName = "Dead"
 private let fallingFrames: UInt8 = 29
 
 private let gravity: Int16 = 1
+private let terminalVelocity: Int16 = 20
 
 public struct RedHatBoyState<S> {
   private let _context: RedHatBoyContext
@@ -42,17 +44,17 @@ public struct RedHatBoyContext {
 
 extension RedHatBoyContext {
   func update(frameCount: UInt8) -> Self {
+    var newVelocity = velocity
+    if velocity.y < terminalVelocity {
+      newVelocity.y += gravity
+    }
+
     var newFrame = frame
     if frame < frameCount {
       newFrame += 1
     } else {
       newFrame = 0
     }
-
-    let newVelocity = Point(
-      x: velocity.x,
-      y: velocity.y + gravity
-    )
 
     var newPosition = Point(
       x: position.x + newVelocity.x,
@@ -106,13 +108,22 @@ extension RedHatBoyContext {
   func stop() -> Self {
     let newVelocity = Point(
       x: 0,
-      y: velocity.y
+      y: 0
     )
 
     return .init(
       frame: frame,
       position: position,
       velocity: newVelocity
+    )
+  }
+
+  func setOn(position: Int16) -> Self {
+    let newPositionY = position - playerHeight
+    return .init(
+      frame: frame,
+      position: .init(x: self.position.x, y: newPositionY),
+      velocity: velocity
     )
   }
 }
@@ -182,6 +193,13 @@ public extension RedHatBoyState where S == Running {
       _state: Falling()
     )
   }
+
+  func landOn(position: Float32) -> RedHatBoyState<Running> {
+    RedHatBoyState<Running>(
+      _context: _context.setOn(position: Int16(position)),
+      _state: Running()
+    )
+  }
 }
 
 public struct Sliding {}
@@ -213,6 +231,13 @@ public extension RedHatBoyState where S == Sliding {
       _state: Falling()
     )
   }
+
+  func landOn(position: Float32) -> RedHatBoyState<Sliding> {
+    RedHatBoyState<Sliding>(
+      _context: _context.setOn(position: Int16(position)),
+      _state: Sliding()
+    )
+  }
 }
 
 public enum SlidingEndState {
@@ -230,7 +255,7 @@ public extension RedHatBoyState where S == Jumping {
   func update() -> JumpingEndState {
     let newContext = _context.update(frameCount: jumpingFrames)
     if context.position.y >= floor {
-      return .complete(self.land())
+      return .landing(self.landOn(position: Float32(height)))
     } else {
       return .jumping(.init(
         _context: newContext,
@@ -239,8 +264,11 @@ public extension RedHatBoyState where S == Jumping {
     }
   }
 
-  func land() -> RedHatBoyState<Running> {
-    return .init(_context: _context.resetFrame(), _state: Running())
+  func landOn(position: Float32) -> RedHatBoyState<Running> {
+    return .init(
+      _context: _context.resetFrame().setOn(position: Int16(position)),
+      _state: Running()
+    )
   }
 
   func knockOut() -> RedHatBoyState<Falling> {
@@ -252,7 +280,7 @@ public extension RedHatBoyState where S == Jumping {
 }
 
 public enum JumpingEndState {
-  case complete(RedHatBoyState<Running>)
+  case landing(RedHatBoyState<Running>)
   case jumping(RedHatBoyState<Jumping>)
 }
 

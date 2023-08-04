@@ -13,6 +13,7 @@ public enum Event {
   case jump
   case knockOut
   case update
+  case land(Float32)
 }
 
 extension RedHatBoyStateMachine {
@@ -52,13 +53,19 @@ extension RedHatBoyStateMachine {
 
   func transition(event: Event) -> Self {
     switch (self, event) {
+    // run
     case let (.idle(state), .run):
       return state.run().into()
+
+    // slide
     case let (.running(state), .slide):
       return state.slide().into()
+
+    // jump
     case let (.running(state), .jump):
       return state.jump().into()
 
+    // update
     case let (.idle(state), .update):
       return state.update().into()
     case let (.running(state), .update):
@@ -70,12 +77,22 @@ extension RedHatBoyStateMachine {
     case let (.falling(state), .update):
       return state.update().into()
 
+    // knockOut
     case let (.running(state), .knockOut):
       return state.knockOut().into()
     case let (.jumping(state), .knockOut):
       return state.knockOut().into()
     case let (.sliding(state), .knockOut):
       return state.knockOut().into()
+
+    // land
+    case let (.jumping(state), .land(position)):
+      return state.landOn(position: position).into()
+    case let (.running(state), .land(position)):
+      return state.landOn(position: position).into()
+    case let (.sliding(state), .land(position)):
+      return state.landOn(position: position).into()
+
     default:
       return self
     }
@@ -124,7 +141,7 @@ extension RedHatBoyState where S == Jumping {
 extension JumpingEndState {
   func into() -> RedHatBoyStateMachine {
     switch self {
-    case let .complete(state):
+    case let .landing(state):
       return .running(state)
     case let .jumping(state):
       return .jumping(state)

@@ -9,10 +9,10 @@ public struct Point {
 }
 
 public struct Rect {
-  let x: Float32
-  let y: Float32
-  let width: Float32
-  let height: Float32
+  public let x: Float32
+  public let y: Float32
+  public let width: Float32
+  public let height: Float32
 
   public init(
     x: Float32,

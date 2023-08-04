@@ -4,10 +4,15 @@ import Foundation
 import JavaScriptKit
 import JavaScriptEventLoop
 
+let height: Int16 = 600
+let lowPlatform: Int16 = 420
+let highPlatform: Int16 = 375
+
 public struct Walk {
   let boy: RedHatBoy
   let background: Image
   let stone: Image
+  let platform: Platform
 }
 
 public enum WalkTheDog {
@@ -32,6 +37,15 @@ extension WalkTheDog: Game {
         let background = await loadImage(source: "BG.png")
         let stone = await loadImage(source: "Stone.png")
         let image = await loadImage(source: "rhb.png")
+        let platformResponse = await fetchJson(path: "tiles.json")
+        let platformJSON = try await JSPromise(platformResponse.json().object!)!.value
+        let platformSheet = try JSValueDecoder().decode(Sheet.self, from: platformJSON)
+        let platformImage = await loadImage(source: "tiles.png")
+        let platform = Platform(
+          sheet: platformSheet,
+          image: platformImage,
+          position: .init(x: 370, y: lowPlatform)
+        )
 
         return WalkTheDog.loaded(Walk(
           boy: RedHatBoy(
@@ -45,7 +59,8 @@ extension WalkTheDog: Game {
           stone: Image(
             element: stone,
             position: .init(x: 150, y: 546)
-          )
+          ),
+          platform: platform
         ))
       } catch {
         fatalError("Error: \(error)")
@@ -73,6 +88,19 @@ extension WalkTheDog: Game {
 
       walk.boy.update()
 
+      // collision with a platform
+      walk.platform.boundingBoxes.forEach { boundingBox in
+        if walk.boy.boundingBox.intersects(rect: boundingBox) {
+          if walk.boy.velocityY > 0 &&
+              walk.boy.posY < walk.platform.position.y {
+            walk.boy.landOn(position: boundingBox.y)
+          } else {
+            walk.boy.knockOut()
+          }
+        }
+      }
+
+      // collision with a stone
       if walk.boy.boundingBox.intersects(rect: walk.stone.boundingBox) {
         walk.boy.knockOut()
       }
@@ -80,11 +108,12 @@ extension WalkTheDog: Game {
   }
 
   public func draw(renderer: Renderer) {
-    renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: 600))
+    renderer.clear(rect: .init(x: 0, y: 0, width: 600, height: Float32(height)))
     if case let .loaded(walk) = self {
       walk.background.draw(renderer: renderer)
       walk.boy.draw(renderer: renderer)
       walk.stone.draw(renderer: renderer)
+      walk.platform.draw(renderer: renderer)
     }
   }
 }

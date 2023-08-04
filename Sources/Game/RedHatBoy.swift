@@ -20,7 +20,7 @@ public final class RedHatBoy {
     spriteSheet.frames[frameName]
   }
 
-  var boundingBox: Rect {
+  var destinationBox: Rect {
     guard let sprite = currentSprite else { fatalError("Cell not found") }
     
     return .init(
@@ -29,6 +29,28 @@ public final class RedHatBoy {
       width: Float32(sprite.frame.w),
       height: Float32(sprite.frame.h)
     )
+  }
+
+  var boundingBox: Rect {
+    let xOffset: Float32 = 18
+    let yOffset: Float32 = 14
+    let widthOffset: Float32 = 28
+    let box = destinationBox
+
+    return .init(
+      x: box.x + xOffset,
+      y: box.y + yOffset,
+      width: box.width - widthOffset,
+      height: box.height - yOffset
+    )
+  }
+
+  var posY: Int16 {
+    stateMachine.context.position.y
+  }
+
+  var velocityY: Int16 {
+    stateMachine.context.velocity.y
   }
 
   func draw(renderer: Renderer) {
@@ -72,5 +94,9 @@ public final class RedHatBoy {
 
   func knockOut() {
     stateMachine = stateMachine.transition(event: .knockOut)
+  }
+
+  func landOn(position: Float32) {
+    stateMachine = stateMachine.transition(event: .land(position))
   }
 }
