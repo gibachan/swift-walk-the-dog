@@ -126,14 +126,7 @@ extension WalkTheDog: Game {
 
       // Timeline
       if walk.timeline < timelineMinimum {
-        let nextObstacles = stoneAndPlatform(
-          stone: walk.stone,
-          spriteSheet: walk.obstacleSheet,
-          offsetX: walk.timeline + obstacleBuffer
-        )
-
-        walk.timeline = rightMost(obstacleList: nextObstacles)
-        walk.obstacles = walk.obstacles + nextObstacles
+        walk.generateNextSegment()
       } else {
         walk.timeline += walk.velocity
       }

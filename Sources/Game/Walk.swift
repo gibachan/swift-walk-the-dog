@@ -30,4 +30,29 @@ extension Walk {
   var velocity: Int16 {
     -boy.walkingSpeed
   }
+
+  func generateNextSegment() {
+    let nextSegment = (0...1).randomElement()!
+    let nextObstacles: [any Obstacle]
+
+    switch nextSegment {
+    case 0:
+      nextObstacles = stoneAndPlatform(
+        stone: stone,
+        spriteSheet: obstacleSheet,
+        offsetX: timeline + obstacleBuffer
+      )
+    case 1:
+      nextObstacles = platformAndStone(
+        stone: stone,
+        spriteSheet: obstacleSheet,
+        offsetX: timeline + obstacleBuffer
+      )
+    default:
+      nextObstacles = []
+    }
+
+    timeline = rightMost(obstacleList: nextObstacles)
+    obstacles = obstacles + nextObstacles
+  }
 }

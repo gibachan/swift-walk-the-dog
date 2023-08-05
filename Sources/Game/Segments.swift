@@ -36,6 +36,25 @@ func stoneAndPlatform(
   ]
 }
 
+func platformAndStone(
+  stone: JSValue, // HtmlImageElement
+  spriteSheet: SpriteSheet,
+  offsetX: Int16
+) -> [any Obstacle] {
+  let initialStoneOffset: Int16 = 400
+  let initialPlatformOffset: Int16 = 200
+  return [
+    Barrier(image: Image(
+      element: stone,
+      position: .init(x: offsetX + initialStoneOffset, y: stoneOnGround)
+    )),
+    createFloatingPlatform(
+      spriteSheet: spriteSheet,
+      position: Point(x: offsetX + initialPlatformOffset, y: highPlatform)
+    )
+  ]
+}
+
 func createFloatingPlatform(
   spriteSheet: SpriteSheet,
   position: Point
