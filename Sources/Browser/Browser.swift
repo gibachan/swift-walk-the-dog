@@ -1,4 +1,5 @@
 import JavaScriptKit
+import JavaScriptEventLoop
 
 private func fetch(_ url: String) -> JSPromise {
   let jsFetch = JSObject.global.fetch.function!
@@ -25,7 +26,19 @@ public func fetchJson(path: String) async -> JSValue {
   await withCheckedContinuation { continuation in
     fetch(path)
       .then { response in
-        continuation.resume(returning: response)
+        let json = try await JSPromise(response.json().object!)!.value
+        continuation.resume(returning: json)
+        return JSValue.undefined
+      }
+  }
+}
+
+public func fetchArrayBuffer(resource: String) async -> JSValue {
+  await withCheckedContinuation { continuation in
+    fetch(resource)
+      .then { response in
+        let arrayBuffer = try await JSPromise(response.arrayBuffer().object!)!.value
+        continuation.resume(returning: arrayBuffer)
         return JSValue.undefined
       }
   }

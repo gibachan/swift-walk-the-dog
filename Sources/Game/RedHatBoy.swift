@@ -6,8 +6,13 @@ public final class RedHatBoy {
   private let spriteSheet: Sheet
   private let image: JSValue //HtmlImageElement
 
-  init(spriteSheet: Sheet, image: JSValue) {
-    self.stateMachine = .idle(RedHatBoyState<Idle>())
+  init(
+    spriteSheet: Sheet,
+    image: JSValue,
+    audio: Audio,
+    jumpSound: Sound
+  ) {
+    self.stateMachine = .idle(RedHatBoyState<Idle>(audio: audio, jumpSound: jumpSound))
     self.spriteSheet = spriteSheet
     self.image = image
   }

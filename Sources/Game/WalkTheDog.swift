@@ -27,14 +27,12 @@ extension WalkTheDog: Game {
     switch self {
     case .loading:
       do {
-        let response = await fetchJson(path: "rhb.json")
-        let json = try await JSPromise(response.json().object!)!.value
+        let json = await fetchJson(path: "rhb.json")
         let sheet = try JSValueDecoder().decode(Sheet.self, from: json)
         let background = await loadImage(source: "BG.png")
         let stone = await loadImage(source: "Stone.png")
         let image = await loadImage(source: "rhb.png")
-        let platformResponse = await fetchJson(path: "tiles.json")
-        let platformJSON = try await JSPromise(platformResponse.json().object!)!.value
+        let platformJSON = await fetchJson(path: "tiles.json")
         let platformSheet = try JSValueDecoder().decode(Sheet.self, from: platformJSON)
         let platformImage = await loadImage(source: "tiles.png")
 
@@ -42,26 +40,21 @@ extension WalkTheDog: Game {
           sheet: platformSheet,
           image: platformImage
         )
-        let platform = Platform(
-          sheet: spriteSheet,
-          position: .init(x: firstPlatform, y: lowPlatform),
-          spriteNames: ["13.png", "14.png", "15.png"],
-          boundingBoxes: [
-            .init(x: 0, y: 0, width: 60, height: 54),
-            .init(x: 60, y: 0, width: Int16(384 - (60 * 2)), height: 93),
-            .init(x: Int16(384 - 60), y: 0, width: 60, height: 54)
-          ]
-        )
         let backgroundWidth: Int16 = Int16(background.width.number!)
 
         let startingObstacles = stoneAndPlatform(stone: stone, spriteSheet: spriteSheet, offsetX: 0)
         let timeline = rightMost(obstacleList: startingObstacles)
 
+        let audio = Audio()
+        let jumpSound = await audio.loadSound(fileName: "SFX_Jump_23.mp3")
+
         return WalkTheDog.loaded(Walk(
           obstacleSheet: spriteSheet,
           boy: RedHatBoy(
             spriteSheet: sheet,
-            image: image
+            image: image,
+            audio: audio,
+            jumpSound: jumpSound
           ),
           backgrounds: [
             Image(

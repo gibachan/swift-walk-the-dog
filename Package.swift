@@ -25,6 +25,8 @@ let package = Package(
               .copy("Resources/Stone.png"),
               .copy("Resources/tiles.png"),
               .copy("Resources/tiles.json"),
+              .copy("Resources/background_song.mp3"),
+              .copy("Resources/SFX_Jump_23.mp3"),
             ]
         ),
         .target(
@@ -32,6 +34,7 @@ let package = Package(
             dependencies: [
               "Game",
               "Engine",
+              "Sound",
               .product(name: "JavaScriptKit", package: "JavaScriptKit"),
             ]),
         .target(
@@ -45,12 +48,20 @@ let package = Package(
             name: "Engine",
             dependencies: [
               "Browser",
+              "Sound",
               .product(name: "JavaScriptKit", package: "JavaScriptKit"),
             ]),
         .target(
             name: "Browser",
             dependencies: [
               .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+              .product(name: "JavaScriptEventLoop", package: "JavaScriptKit"),
+            ]),
+        .target(
+            name: "Sound",
+            dependencies: [
+              .product(name: "JavaScriptKit", package: "JavaScriptKit"),
+              .product(name: "JavaScriptEventLoop", package: "JavaScriptKit"),
             ]),
         .testTarget(
             name: "SwiftWalkTheDogLibraryTests",

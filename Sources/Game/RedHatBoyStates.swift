@@ -31,11 +31,13 @@ extension RedHatBoyState {
 public struct Idle {}
 
 public extension RedHatBoyState where S == Idle {
-  init() {
+  init(audio: Audio, jumpSound: Sound) {
     self._context = RedHatBoyContext(
       frame: 0,
       position: .init(x: startingPoint, y: floor),
-      velocity: .init(x: 0, y: 0)
+      velocity: .init(x: 0, y: 0),
+      audio: audio,
+      jumpSound: jumpSound
     )
     self._state = Idle()
   }
@@ -82,7 +84,7 @@ public extension RedHatBoyState where S == Running {
 
   func jump() -> RedHatBoyState<Jumping> {
     RedHatBoyState<Jumping>(
-      _context: _context.setVerticalVelocity(y: jumpSpeed).resetFrame(),
+      _context: _context.resetFrame().setVerticalVelocity(y: jumpSpeed).playJumpSound(),
       _state: Jumping()
     )
   }

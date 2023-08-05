@@ -4,6 +4,8 @@ public struct RedHatBoyContext {
   let frame: UInt8
   let position: Point
   let velocity: Point
+  let audio: Audio
+  let jumpSound: Sound
 }
 
 extension RedHatBoyContext {
@@ -31,7 +33,9 @@ extension RedHatBoyContext {
     return .init(
       frame: newFrame,
       position: newPosition,
-      velocity: newVelocity
+      velocity: newVelocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
   }
 
@@ -39,7 +43,9 @@ extension RedHatBoyContext {
     .init(
       frame: 0,
       position: position,
-      velocity: velocity
+      velocity: velocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
   }
 
@@ -52,7 +58,9 @@ extension RedHatBoyContext {
     return .init(
       frame: frame,
       position: position,
-      velocity: newVelocity
+      velocity: newVelocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
   }
 
@@ -65,7 +73,9 @@ extension RedHatBoyContext {
     return .init(
       frame: frame,
       position: position,
-      velocity: newVelocity
+      velocity: newVelocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
   }
 
@@ -78,7 +88,9 @@ extension RedHatBoyContext {
     return .init(
       frame: frame,
       position: position,
-      velocity: newVelocity
+      velocity: newVelocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
   }
 
@@ -87,7 +99,14 @@ extension RedHatBoyContext {
     return .init(
       frame: frame,
       position: .init(x: self.position.x, y: newPositionY),
-      velocity: velocity
+      velocity: velocity,
+      audio: audio,
+      jumpSound: jumpSound
     )
+  }
+
+  func playJumpSound() -> Self {
+    audio.play(sound: jumpSound)
+    return self
   }
 }
