@@ -1,7 +1,7 @@
 import Engine
 import JavaScriptKit
 
-struct Platform {
+final class Platform {
   let sheet: Sheet
   let image: JSValue // HtmlImageElement
   var position: Point
@@ -55,6 +55,33 @@ extension Platform {
     return [boundingBoxOne, boundingBoxTwo, boundingBoxThree]
   }
 
+  func moveHorizontaly(_ distance: Int16) {
+    position = .init(
+      x: position.x + distance,
+      y: position.y
+    )
+  }
+}
+
+extension Platform: Obstacle {
+  var right: Int16 {
+    let box = boundingBoxes.last ?? .init(x: 0, y: 0, width: 0, height: 0)
+    return box.right
+  }
+
+  func checkIntersection(boy: RedHatBoy) {
+    guard let boxToLandOn = boundingBoxes.first(where: { boy.boundingBox.intersects(rect: $0) }) else {
+      return
+    }
+
+    if boy.velocityY > 0 &&
+        boy.posY < position.y {
+      boy.landOn(position: boxToLandOn.y)
+    } else {
+      boy.knockOut()
+    }
+  }
+
   func draw(renderer: Renderer) {
     guard let platform = sheet.frames["13.png"] else { fatalError() }
 
@@ -75,10 +102,7 @@ extension Platform {
     )
   }
 
-  mutating func moveHorizontaly(_ distance: Int16) {
-    position = .init(
-      x: position.x + distance,
-      y: position.y
-    )
+  func moveHorizontally(x: Int16) {
+    position = .init(x: position.x + x, y: position.y)
   }
 }

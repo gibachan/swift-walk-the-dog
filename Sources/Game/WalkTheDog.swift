@@ -55,11 +55,13 @@ extension WalkTheDog: Game {
               position: .init(x: backgroundWidth, y: 0)
             )
           ],
-          stone: Image(
-            element: stone,
-            position: .init(x: 150, y: 546)
-          ),
-          platform: platform
+          obstacles: [
+            Barrier(image: Image(
+              element: stone,
+              position: .init(x: 150, y: 546)
+            )),
+            platform
+          ]
         ))
       } catch {
         fatalError("Error: \(error)")
@@ -85,11 +87,10 @@ extension WalkTheDog: Game {
         walk.boy.jump()
       }
 
+      // Boy
       walk.boy.update()
 
-      walk.platform.moveHorizontaly(walk.velocity)
-      walk.stone.moveHorizontaly(walk.velocity)
-
+      // Background
       var firstBackground = walk.backgrounds[0]
       var secondBackground = walk.backgrounds[1]
       firstBackground.moveHorizontaly(walk.velocity)
@@ -102,22 +103,11 @@ extension WalkTheDog: Game {
       }
       walk.backgrounds = [firstBackground, secondBackground]
 
-
-      // collision with a platform
-      walk.platform.boundingBoxes.forEach { boundingBox in
-        if walk.boy.boundingBox.intersects(rect: boundingBox) {
-          if walk.boy.velocityY > 0 &&
-              walk.boy.posY < walk.platform.position.y {
-            walk.boy.landOn(position: boundingBox.y)
-          } else {
-            walk.boy.knockOut()
-          }
-        }
-      }
-
-      // collision with a stone
-      if walk.boy.boundingBox.intersects(rect: walk.stone.boundingBox) {
-        walk.boy.knockOut()
+      // Obstacles
+      walk.obstacles = walk.obstacles.filter { $0.right > 0 }
+      walk.obstacles.forEach { obstacle in
+        obstacle.moveHorizontally(x: walk.velocity)
+        obstacle.checkIntersection(boy: walk.boy)
       }
     }
   }
@@ -129,8 +119,9 @@ extension WalkTheDog: Game {
         background.draw(renderer: renderer)
       }
       walk.boy.draw(renderer: renderer)
-      walk.stone.draw(renderer: renderer)
-      walk.platform.draw(renderer: renderer)
+      walk.obstacles.forEach { obstacle in
+        obstacle.draw(renderer: renderer)
+      }
     }
   }
 }
