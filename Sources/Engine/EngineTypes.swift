@@ -59,3 +59,28 @@ public extension Rect {
     position = .init(x: x, y: position.y)
   }
 }
+
+public struct Size: Decodable {
+  public let w: UInt16
+  public let h: UInt16
+}
+
+public struct Cell: Decodable {
+  public let frame: SheetRect
+  let rotated: Bool
+  let trimmed: Bool
+  public let spriteSourceSize: SheetRect
+  let sourceSize: Size
+
+}
+
+public struct Sheet: Decodable {
+  public let frames: [String: Cell]
+}
+
+public struct SheetRect: Decodable {
+  public let x: Int16
+  public let y: Int16
+  public let w: Int16
+  public let h: Int16
+}

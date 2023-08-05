@@ -4,6 +4,7 @@ import JavaScriptKit
 import JavaScriptEventLoop
 
 let height: Int16 = 600
+let firstPlatform: Int16 = 370
 let lowPlatform: Int16 = 420
 let highPlatform: Int16 = 375
 
@@ -33,14 +34,19 @@ extension WalkTheDog: Game {
         let platformJSON = try await JSPromise(platformResponse.json().object!)!.value
         let platformSheet = try JSValueDecoder().decode(Sheet.self, from: platformJSON)
         let platformImage = await loadImage(source: "tiles.png")
-        let platform = Platform(
+
+        let spriteSheet = SpriteSheet(
           sheet: platformSheet,
-          image: platformImage,
-          position: .init(x: 370, y: lowPlatform)
+          image: platformImage
+        )
+        let platform = Platform(
+          sheet: spriteSheet,
+          position: .init(x: firstPlatform, y: lowPlatform)
         )
         let backgroundWidth: Int16 = Int16(background.width.number!)
 
         return WalkTheDog.loaded(Walk(
+          obstacleSheet: spriteSheet,
           boy: RedHatBoy(
             spriteSheet: sheet,
             image: image

@@ -1,21 +1,18 @@
 import Engine
-import JavaScriptKit
 
 final class Platform {
-  let sheet: Sheet
-  let image: JSValue // HtmlImageElement
+  let sheet: SpriteSheet
   var position: Point
 
-  init(sheet: Sheet, image: JSValue, position: Point) {
+  init(sheet: SpriteSheet, position: Point) {
     self.sheet = sheet
-    self.image = image
     self.position = position
   }
 }
 
 extension Platform {
   var destinationBox: Rect {
-    guard let platform = sheet.frames["13.png"] else { fatalError() }
+    guard let platform = sheet.cell(name: "13.png") else { fatalError() }
 
     return .init(
       x: position.x,
@@ -83,11 +80,11 @@ extension Platform: Obstacle {
   }
 
   func draw(renderer: Renderer) {
-    guard let platform = sheet.frames["13.png"] else { fatalError() }
+    guard let platform = sheet.cell(name: "13.png") else { fatalError() }
 
-    renderer.draw(
-      image: image,
-      frame: .init(
+    sheet.draw(
+      renderer: renderer,
+      source: .init(
         x: platform.frame.x,
         y: platform.frame.y,
         width: platform.frame.w * 3,
