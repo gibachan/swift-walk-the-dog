@@ -23,7 +23,7 @@ func stoneAndPlatform(
   spriteSheet: SpriteSheet,
   offsetX: Int16
 ) -> [any Obstacle] {
-  let initialStoneOffset: Int16 = 150
+  let initialStoneOffset: Int16 = 250
   return [
     Barrier(image: Image(
       element: stone,

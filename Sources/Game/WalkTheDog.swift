@@ -47,6 +47,8 @@ extension WalkTheDog: Game {
 
         let audio = Audio()
         let jumpSound = await audio.loadSound(fileName: "SFX_Jump_23.mp3")
+        let backgroundMusic = await audio.loadSound(fileName: "background_song.mp3")
+        audio.playLooping(sound: backgroundMusic)
 
         return WalkTheDog.loaded(Walk(
           obstacleSheet: spriteSheet,

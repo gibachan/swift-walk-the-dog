@@ -20,7 +20,19 @@ public extension Audio {
   }
 
   func play(sound: Sound) {
-    playSound(ctx: context, buffer: sound.buffer)
+    playSound(
+      ctx: context,
+      buffer: sound.buffer,
+      looping: .no
+    )
+  }
+
+  func playLooping(sound: Sound) {
+    playSound(
+      ctx: context,
+      buffer: sound.buffer,
+      looping: .yes
+    )
   }
 }
 

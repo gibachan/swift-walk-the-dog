@@ -16,10 +16,29 @@ func connectWithAudioNode(
   _ = bufferSource.connect(destination)
 }
 
-public func playSound(ctx: JSObject, buffer: JSObject) {
+func createTrackSource(
+  ctx: JSObject,
+  buffer: JSObject
+) -> JSValue {
   var trackSource = createBufferSource(ctx: ctx)
   trackSource.buffer = .object(buffer)
   connectWithAudioNode(bufferSource: trackSource, destination: ctx.destination)
+  return trackSource
+}
+
+public enum Looping {
+  case no, yes
+}
+
+public func playSound(
+  ctx: JSObject,
+  buffer: JSObject,
+  looping: Looping
+) {
+  let trackSource = createTrackSource(ctx: ctx, buffer: buffer)
+  if case .yes = looping {
+    _ = trackSource.object!.loop = JSValue.boolean(true)
+  }
 
   setVolume(ctx: ctx, trackSource: trackSource, volume: 0.1)
 
