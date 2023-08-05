@@ -2,61 +2,41 @@ import Engine
 
 final class Platform {
   let sheet: SpriteSheet
-  var position: Point
+  private(set) public var boundingBoxes: [Rect]
+  let sprites: [Cell]
+  private(set) public var position: Point
 
-  init(sheet: SpriteSheet, position: Point) {
+  init(
+    sheet: SpriteSheet,
+    position: Point,
+    spriteNames: [String],
+    boundingBoxes: [Rect]
+  ) {
     self.sheet = sheet
     self.position = position
+    self.sprites = spriteNames.compactMap { sheet.cell(name: $0) }
+    self.boundingBoxes = boundingBoxes.map { boundingBox in
+        .init(
+          x: boundingBox.x + position.x,
+          y: boundingBox.y + position.y,
+          width: boundingBox.width,
+          height: boundingBox.height
+        )
+    }
   }
 }
 
 extension Platform {
-  var destinationBox: Rect {
-    guard let platform = sheet.cell(name: "13.png") else { fatalError() }
-
-    return .init(
-      x: position.x,
-      y: position.y,
-      width: platform.frame.w * 3,
-      height: platform.frame.h
-    )
-  }
-
-  var boundingBoxes: [Rect] {
-    let xOffset: Int16 = 60
-    let endHeight: Int16 = 54
-
-    let box = destinationBox
-
-    let boundingBoxOne = Rect(
-      x: box.x,
-      y: box.y,
-      width: xOffset,
-      height: endHeight
-    )
-
-    let boundingBoxTwo = Rect(
-      x: box.x + Int16(xOffset),
-      y: box.y,
-      width: box.width - (xOffset * 2),
-      height: box.height
-    )
-
-    let boundingBoxThree = Rect(
-      x: box.x + box.width - xOffset,
-      y: box.y,
-      width: xOffset,
-      height: endHeight
-    )
-
-    return [boundingBoxOne, boundingBoxTwo, boundingBoxThree]
-  }
-
-  func moveHorizontaly(_ distance: Int16) {
+  func moveHorizontaly(_ x: Int16) {
     position = .init(
-      x: position.x + distance,
+      x: position.x + x,
       y: position.y
     )
+    boundingBoxes = boundingBoxes.map {
+      var _boundingBox = $0
+      _boundingBox.setX($0.position.x + x)
+      return _boundingBox
+    }
   }
 }
 
@@ -80,23 +60,26 @@ extension Platform: Obstacle {
   }
 
   func draw(renderer: Renderer) {
-    guard let platform = sheet.cell(name: "13.png") else { fatalError() }
-
-    sheet.draw(
-      renderer: renderer,
-      source: .init(
-        x: platform.frame.x,
-        y: platform.frame.y,
-        width: platform.frame.w * 3,
-        height: platform.frame.h
-      ),
-      destination: .init(
-        x: position.x,
-        y: position.y,
-        width: platform.frame.w * 3,
-        height: platform.frame.h
+    var x: Int16 = 0
+    sprites.forEach { sprite in
+      sheet.draw(
+        renderer: renderer,
+        source: .init(
+          x: sprite.frame.x,
+          y: sprite.frame.y,
+          width: sprite.frame.w,
+          height: sprite.frame.h
+        ),
+        // Just use position and the standard widths in the tileset
+        destination: .init(
+          x: position.x + x,
+          y: position.y,
+          width: sprite.frame.w,
+          height: sprite.frame.h
+        )
       )
-    )
+      x += sprite.frame.w
+    }
   }
 
   func moveHorizontally(x: Int16) {

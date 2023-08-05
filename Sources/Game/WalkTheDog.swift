@@ -41,9 +41,18 @@ extension WalkTheDog: Game {
         )
         let platform = Platform(
           sheet: spriteSheet,
-          position: .init(x: firstPlatform, y: lowPlatform)
+          position: .init(x: firstPlatform, y: lowPlatform),
+          spriteNames: ["13.png", "14.png", "15.png"],
+          boundingBoxes: [
+            .init(x: 0, y: 0, width: 60, height: 54),
+            .init(x: 60, y: 0, width: Int16(384 - (60 * 2)), height: 93),
+            .init(x: Int16(384 - 60), y: 0, width: 60, height: 54)
+          ]
         )
         let backgroundWidth: Int16 = Int16(background.width.number!)
+
+        let startingObstacles = stoneAndPlatform(stone: stone, spriteSheet: spriteSheet, offsetX: 0)
+        let timeline = rightMost(obstacleList: startingObstacles)
 
         return WalkTheDog.loaded(Walk(
           obstacleSheet: spriteSheet,
@@ -61,13 +70,9 @@ extension WalkTheDog: Game {
               position: .init(x: backgroundWidth, y: 0)
             )
           ],
-          obstacles: [
-            Barrier(image: Image(
-              element: stone,
-              position: .init(x: 150, y: 546)
-            )),
-            platform
-          ]
+          obstacles: startingObstacles,
+          stone: stone,
+          timeline: timeline
         ))
       } catch {
         fatalError("Error: \(error)")
