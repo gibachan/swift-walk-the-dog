@@ -8,6 +8,9 @@ let firstPlatform: Int16 = 370
 let lowPlatform: Int16 = 420
 let highPlatform: Int16 = 375
 
+let timelineMinimum: Int16 = 1000
+let obstacleBuffer: Int16 = 20
+
 public enum WalkTheDog {
   case loading
   case loaded(Walk)
@@ -119,6 +122,20 @@ extension WalkTheDog: Game {
       walk.obstacles.forEach { obstacle in
         obstacle.moveHorizontally(x: walk.velocity)
         obstacle.checkIntersection(boy: walk.boy)
+      }
+
+      // Timeline
+      if walk.timeline < timelineMinimum {
+        let nextObstacles = stoneAndPlatform(
+          stone: walk.stone,
+          spriteSheet: walk.obstacleSheet,
+          offsetX: walk.timeline + obstacleBuffer
+        )
+
+        walk.timeline = rightMost(obstacleList: nextObstacles)
+        walk.obstacles = walk.obstacles + nextObstacles
+      } else {
+        walk.timeline += walk.velocity
       }
     }
   }

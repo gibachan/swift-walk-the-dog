@@ -14,7 +14,7 @@ private let platformEdgeWidth: Int16 = 60
 private let platformEdgeHeight: Int16 = 54
 private let floatingPlatformBoundingBoxes: [Rect] = [
   .init(x: 0, y: 0, width: platformEdgeWidth, height: platformEdgeHeight),
-  .init(x: platformWidth, y: 0, width: platformWidth - platformEdgeWidth * 2, height: platformHeight),
+  .init(x: platformEdgeWidth, y: 0, width: platformWidth - platformEdgeWidth * 2, height: platformHeight),
   .init(x: platformWidth - platformEdgeWidth, y: 0, width: platformEdgeWidth, height: platformEdgeHeight)
 ]
 

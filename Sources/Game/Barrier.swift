@@ -21,6 +21,8 @@ extension Barrier: Obstacle {
 
   func draw(renderer: Engine.Renderer) {
     image.draw(renderer: renderer)
+
+    renderer.drawRect(boundingBox: image.boundingBox)
   }
 
   func moveHorizontally(x: Int16) {

@@ -51,8 +51,7 @@ extension Platform: Obstacle {
       return
     }
 
-    if boy.velocityY > 0 &&
-        boy.posY < position.y {
+    if boy.velocityY > 0 && boy.posY < position.y {
       boy.landOn(position: boxToLandOn.y)
     } else {
       boy.knockOut()
@@ -80,9 +79,16 @@ extension Platform: Obstacle {
       )
       x += sprite.frame.w
     }
+
+    boundingBoxes.forEach { renderer.drawRect(boundingBox: $0) }
   }
 
   func moveHorizontally(x: Int16) {
     position = .init(x: position.x + x, y: position.y)
+    boundingBoxes = boundingBoxes.map {
+      var box = $0
+      box.setX($0.position.x + x)
+      return box
+    }
   }
 }
