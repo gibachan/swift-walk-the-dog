@@ -59,3 +59,23 @@ public func requestAnimation(callback: @escaping (Float64) -> Void) {
 public func getNow() -> Float64 {
   getWindow().performance.now().number ?? 0
 }
+
+private func findUI() -> JSValue? {
+  return getDocument().getElementById("ui")
+}
+
+public func drawUI(html: String) {
+  _ = findUI()?.insertAdjacentHTML("afterbegin", html)
+}
+
+public func hideUI() {
+  guard let ui = findUI() else { return }
+
+  let child = ui.firstChild()
+  if child.isNull {
+    print("Not Found child")
+  } else {
+    print("Found child: \(child)")
+    _ = ui.removeChild(child)
+  }
+}

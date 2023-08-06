@@ -55,4 +55,16 @@ extension Walk {
     timeline = rightMost(obstacleList: nextObstacles)
     obstacles = obstacles + nextObstacles
   }
+
+  func draw(renderer: Renderer) {
+    backgrounds.forEach { background in
+      background.draw(renderer: renderer)
+    }
+
+    boy.draw(renderer: renderer)
+
+    obstacles.forEach { obstacle in
+      obstacle.draw(renderer: renderer)
+    }
+  }
 }
