@@ -18,6 +18,9 @@ let package = Package(
                 .product(name: "JavaScriptEventLoop", package: "JavaScriptKit")
             ],
             resources: [
+              .copy("Resources/styles.css"),
+              .copy("Resources/Button.svg"),
+              .copy("Resources/kenney_future_narrow-webfont.woff2"),
               .copy("Resources/Idle (1).png"),
               .copy("Resources/rhb.png"),
               .copy("Resources/rhb.json"),
