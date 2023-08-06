@@ -76,8 +76,24 @@ extension WalkTheDogState where T == Ready {
 
 struct Walking {}
 
+enum WalkingEndState {
+  case complete(WalkTheDogState<GameOver>)
+  case `continue`(WalkTheDogState<Walking>)
+}
+
+extension WalkingEndState {
+  func into() -> WalkTheDogStateMachine {
+    switch self {
+    case let .complete(gameOver):
+      return gameOver.into()
+    case let .continue(walking):
+      return walking.into()
+    }
+  }
+}
+
 extension WalkTheDogState where T == Walking {
-  func update(keyState: KeyState) -> WalkTheDogState<Walking> {
+  func update(keyState: KeyState) -> WalkingEndState {
     // Keyboard handling
     if keyState.isPressed(code: "ArrowDown") {
       walk.boy.slide()
@@ -122,23 +138,82 @@ extension WalkTheDogState where T == Walking {
       walk.timeline += walkingSpeed
     }
 
-    return self
+    if walk.knockedOut {
+      return WalkingEndState.complete(endGame())
+    } else {
+      return WalkingEndState.continue(self)
+    }
   }
 
   func into() -> WalkTheDogStateMachine {
     WalkTheDogStateMachine.walking(self)
   }
+
+  func endGame() -> WalkTheDogState<GameOver> {
+    drawUI(html: "<button id='new_game'>NewGame</button>")
+    if let button = findHTMLElementByID(id: "new_game") {
+      addClickHandler(elem: button) {
+        _newGamePressed = true
+      }
+    }
+
+    return WalkTheDogState<GameOver>(
+      _state: GameOver(),
+      walk: walk
+    )
+  }
 }
+
+// FIXME: Not to use global variable
+private  var _newGamePressed = false
 
 struct GameOver {}
 
+extension GameOver {
+  var newGamePressed: Bool {
+    _newGamePressed
+  }
+}
+
+enum GameOverEndState {
+  case complete(WalkTheDogState<Ready>)
+  case `continue`(WalkTheDogState<GameOver>)
+}
+
+extension GameOverEndState {
+  func into() -> WalkTheDogStateMachine {
+    switch self {
+    case let .complete(gameOver):
+      return gameOver.into()
+    case let .continue(walking):
+      return walking.into()
+    }
+  }
+}
+
 extension WalkTheDogState where T == GameOver {
-  func update() -> WalkTheDogState<GameOver> {
-    self
+  func update() -> GameOverEndState {
+    if _state.newGamePressed {
+      return GameOverEndState.complete(newGame())
+    } else {
+      return GameOverEndState.continue(self)
+    }
   }
 
   func into() -> WalkTheDogStateMachine {
     WalkTheDogStateMachine.gameOver(self)
+  }
+
+  func newGame() -> WalkTheDogState<Ready> {
+    hideUI()
+
+    // FIXME: Not to use global variable
+    _newGamePressed = false
+
+    return WalkTheDogState<Ready>(
+      _state: Ready(),
+      walk: Walk.reset(walk)
+    )
   }
 }
 

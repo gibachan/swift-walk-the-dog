@@ -51,6 +51,14 @@ extension RedHatBoyStateMachine {
     }
   }
 
+  var knockedOut: Bool {
+    if case .knockedOut = self {
+      return true
+    } else {
+      return false
+    }
+  }
+
   func transition(event: Event) -> Self {
     switch (self, event) {
     // run

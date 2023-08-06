@@ -62,6 +62,10 @@ public final class RedHatBoy {
     stateMachine.context.velocity.x
   }
 
+  var knockedOut: Bool {
+    stateMachine.knockedOut
+  }
+
   func draw(renderer: Renderer) {
     guard let sprite = currentSprite else { fatalError("Cell not found") }
 
@@ -107,5 +111,14 @@ public final class RedHatBoy {
 
   func landOn(position: Int16) {
     stateMachine = stateMachine.transition(event: .land(position))
+  }
+
+  static func reset(_ boy: RedHatBoy) -> RedHatBoy {
+    RedHatBoy(
+      spriteSheet: boy.spriteSheet,
+      image: boy.image,
+      audio: boy.stateMachine.context.audio,
+      jumpSound: boy.stateMachine.context.jumpSound
+    )
   }
 }

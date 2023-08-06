@@ -70,12 +70,14 @@ public func drawUI(html: String) {
 
 public func hideUI() {
   guard let ui = findUI() else { return }
+  guard let child = ui.object?.firstChild else { return }
 
-  let child = ui.firstChild()
-  if child.isNull {
-    print("Not Found child")
-  } else {
-    print("Found child: \(child)")
-    _ = ui.removeChild(child)
-  }
+  _ = ui.removeChild(child)
+
+  _ = getCanvas().object?.focus?()
+}
+
+public func findHTMLElementByID(id: String) -> JSValue? {
+  return getDocument()
+    .getElementById(id)
 }

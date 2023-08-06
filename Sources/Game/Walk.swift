@@ -31,6 +31,10 @@ extension Walk {
     -boy.walkingSpeed
   }
 
+  var knockedOut: Bool {
+    boy.knockedOut
+  }
+
   func generateNextSegment() {
     let nextSegment = (0...1).randomElement()!
     let nextObstacles: [any Obstacle]
@@ -66,5 +70,23 @@ extension Walk {
     obstacles.forEach { obstacle in
       obstacle.draw(renderer: renderer)
     }
+  }
+
+  static func reset(_ walk: Walk) -> Walk {
+    let startingObstacles = stoneAndPlatform(
+      stone: walk.stone,
+      spriteSheet: walk.obstacleSheet,
+      offsetX: 0
+    )
+    let timeline = rightMost(obstacleList: startingObstacles)
+
+    return Walk(
+      obstacleSheet: walk.obstacleSheet,
+      boy: RedHatBoy.reset(walk.boy),
+      backgrounds: walk.backgrounds,
+      obstacles: startingObstacles,
+      stone: walk.stone,
+      timeline: timeline
+    )
   }
 }
