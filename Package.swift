@@ -19,8 +19,8 @@ let package = Package(
             ],
             resources: [
               .copy("Resources/styles.css"),
-              .copy("Resources/Button.svg"),
-              .copy("Resources/kenney_future_narrow-webfont.woff2"),
+              .copy("Resources/UI/Button.svg"),
+              .copy("Resources/UI/kenney_future_narrow-webfont.woff2"),
               .copy("Resources/Idle (1).png"),
               .copy("Resources/rhb.png"),
               .copy("Resources/rhb.json"),
@@ -28,8 +28,8 @@ let package = Package(
               .copy("Resources/Stone.png"),
               .copy("Resources/tiles.png"),
               .copy("Resources/tiles.json"),
-              .copy("Resources/background_song.mp3"),
-              .copy("Resources/SFX_Jump_23.mp3"),
+              .copy("Resources/Sound/background_song.mp3"),
+              .copy("Resources/Sound/SFX_Jump_23.mp3"),
             ]
         ),
         .target(
