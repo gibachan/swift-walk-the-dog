@@ -67,9 +67,9 @@ let package = Package(
               .product(name: "JavaScriptEventLoop", package: "JavaScriptKit"),
             ]),
         .testTarget(
-            name: "SwiftWalkTheDogLibraryTests",
+            name: "EngineTests",
             dependencies: [
-              "SwiftWalkTheDogLibrary"
+              "Engine"
             ]),
     ]
 )
