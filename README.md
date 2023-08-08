@@ -9,10 +9,18 @@ You can find the original source code written in Rust at https://github.com/Pack
 
 ## Usage
 
+### development
+
 ```
 % ./dev.sh
 ```
 
-## TODO
+Builds the project and runs local server to host WebAssembly executable and a corresponding JavaScript entrypoint that loads it.
 
-- [ ] Use async/await features
+### release
+
+```
+% ./release.sh
+```
+
+All assets including wasm file will be build in `/doc` directory where is configured as GitHub Pages source directory.

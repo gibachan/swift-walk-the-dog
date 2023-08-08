@@ -10,5 +10,4 @@ Task {
   let game = WalkTheDog.new()
   let gameLoop = GameLoop()
   await gameLoop.start(game: game)
-  print("OK")
 }

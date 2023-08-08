@@ -40,7 +40,7 @@ public func playSound(
     _ = trackSource.object!.loop = JSValue.boolean(true)
   }
 
-  setVolume(ctx: ctx, trackSource: trackSource, volume: 0.1)
+  setVolume(ctx: ctx, trackSource: trackSource, volume: 0.01)
 
   _ = trackSource.start()
 }
