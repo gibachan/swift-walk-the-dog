@@ -3,7 +3,7 @@ import JavaScriptKit
 import JavaScriptEventLoop
 import Sound
 
-public struct Audio {
+public final class Audio {
   private let context: JSObject // AudioContext
 
   public init() {

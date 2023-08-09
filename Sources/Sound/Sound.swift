@@ -9,20 +9,12 @@ func createBufferSource(ctx: JSObject) -> JSValue {
   return bufferSource
 }
 
-func connectWithAudioNode(
-  bufferSource: JSValue,
-  destination: JSValue
-) {
-  _ = bufferSource.connect(destination)
-}
-
 func createTrackSource(
   ctx: JSObject,
   buffer: JSObject
 ) -> JSValue {
   var trackSource = createBufferSource(ctx: ctx)
   trackSource.buffer = .object(buffer)
-  connectWithAudioNode(bufferSource: trackSource, destination: ctx.destination)
   return trackSource
 }
 
@@ -40,7 +32,12 @@ public func playSound(
     _ = trackSource.object!.loop = JSValue.boolean(true)
   }
 
-  setVolume(ctx: ctx, trackSource: trackSource, volume: 0.01)
+  let gainNode = ctx.createGain!()
+  _ = trackSource.connect(gainNode)
+  _ = gainNode.connect(ctx.destination)
+
+  let gain = gainNode.object!.gain
+  gain.object!.value = 0.05
 
   _ = trackSource.start()
 }
@@ -57,12 +54,4 @@ public func decodeAudioData(
       return JSValue.undefined
     }
   }
-}
-
-func setVolume(ctx: JSObject, trackSource: JSValue, volume: Double) {
-  let gainNode = ctx.createGain!()
-  let gain = gainNode.object!.gain
-  _ = trackSource.connect(gainNode)
-  _ = gainNode.connect(ctx.destination)
-  gain.object!.value = .number(volume)
 }
