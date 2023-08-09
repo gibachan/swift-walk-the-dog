@@ -1,26 +1,22 @@
 # swift-walk-the-dog
 
-Swift game development exercise, referring to this great book https://www.oreilly.co.jp/books/9784814400393/ .
-You can find the original source code written in Rust at https://github.com/PacktPublishing/Game-Development-with-Rust-and-WebAssembly .
+This repository contains a game developed using Swift and WebAssembly, inspired by the excellent book [Game Development with Rust and WebAssembly](https://www.packtpub.com/product/game-development-with-rust-and-webassembly/9781801070973).
+The original source code, implemented in Rust, can be found at [this repository](https://github.com/PacktPublishing/Game-Development-with-Rust-and-WebAssembly).
 
-## Requirement
+You can play the game online at [swift-walk-the-dog](https://gibachan.github.io/swift-walk-the-dog/), hosted on GitHub Pages.
 
-- [carton](https://github.com/swiftwasm/carton)
+![sample](https://github.com/gibachan/swift-walk-the-dog/assets/7476703/9ef8dbcd-abca-41c8-b9aa-1ec1c48fa433)
 
 ## Usage
 
-### development
+### Requirement
 
-```
-% ./dev.sh
-```
+- [carton](https://github.com/swiftwasm/carton)
 
-Builds the project and runs local server to host WebAssembly executable and a corresponding JavaScript entrypoint that loads it.
+### Development
 
-### release
+To start development, execute the `dev.sh` script. This will build the project and launch a local server that hosts the WebAssembly executable along with a corresponding JavaScript entrypoint to load the game.
 
-```
-% ./release.sh
-```
+### Release
 
-All assets including wasm file will be build in `/doc` directory where is configured as GitHub Pages source directory.
+To create a release build, run the `release.sh` script. This will build the project and bundle all the assets, including the WebAssembly file, into the `/docs` directory. This directory is configured as the source directory for GitHub Pages hosting.
